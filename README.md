@@ -51,8 +51,8 @@ Testefora69
 
 1. Clone o repositório:
    ```sh
-   git clone https://github.com/seu-usuario/nome-do-projeto.git
-   cd nome-do-projeto
+   git clone https://github.com/Viniciusdacostasilva/Loja-de-roupas.git
+   cd Loja-de-roupas
    ```
 
 2. Instale as dependências:
