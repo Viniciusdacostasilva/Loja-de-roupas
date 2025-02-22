@@ -13,6 +13,7 @@ export async function getUsers() {
 }
 
 // Atualizar usuário
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateUser(id: string, data: any) {
   return await updateDoc(doc(db, "users", id), data);
 }
