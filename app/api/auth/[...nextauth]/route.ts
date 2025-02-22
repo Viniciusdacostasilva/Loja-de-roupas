@@ -45,6 +45,7 @@ export const authOptions: AuthOptions = {
             is_admin: userData.is_admin, // Define is_admin com base no banco de dados
             image: user.photoURL,
           };
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           console.error("Erro de autenticação:", error);
           throw new Error("Erro ao fazer login: " + (error.message || "Erro desconhecido"));
