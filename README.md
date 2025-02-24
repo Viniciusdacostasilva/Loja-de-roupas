@@ -3,7 +3,7 @@
 Testefora69
 
 ## 🚀 Tecnologias Utilizadas
-
+- [Node](https://nodejs.org/pt) Versão 20.17.0
 - [Next.js](https://nextjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [TypeScript](https://www.typescriptlang.org/)
@@ -58,15 +58,6 @@ Testefora69
 2. Instale as dependências:
    ```sh
    npm install
-   npm install bcrypt
-   npm install firebase
-   npm install firebase-admin
-   npm install lucide-react
-   npm install next-auth
-   npm install node-firebird
-   npm install react
-   npm install react-dom
-   npm install react-icons
    ```
 
 3. Configure as variáveis de ambiente:
