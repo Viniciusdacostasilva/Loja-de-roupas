@@ -3,7 +3,7 @@
 Testefora69
 
 ## 🚀 Tecnologias Utilizadas
-
+- [Node](https://nodejs.org/pt) Versão 20.17.0
 - [Next.js](https://nextjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [TypeScript](https://www.typescriptlang.org/)
