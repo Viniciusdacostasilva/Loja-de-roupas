@@ -97,7 +97,7 @@ export default function ProductPage() {
     <div
       className={
         darkMode
-          ? "dark bg-gray-900 text-white min-h-screen"
+          ? "dark bg-black text-white min-h-screen"
           : "bg-white text-black min-h-screen"
       }
     >
@@ -148,7 +148,9 @@ export default function ProductPage() {
           ) : (
             <Link
               href="/login"
-              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-400"
+              className={`px-4 py-2 rounded hover:bg-gray-400 ${
+                darkMode ? "bg-white text-black" : "bg-black text-white"
+              }`}
             >
               Login
             </Link>
@@ -177,13 +179,14 @@ export default function ProductPage() {
             <p className="text-2xl font-semibold mt-2">R$ {product.price}</p>
             <p className="text-yellow-500 mt-2 text-xl">⭐ 3.9 (512 reviews)</p>
           </div>
+          <p className="pt-2"> {product.description} </p>
 
 
           <div className="mt-4">
             <p className="font-medium">Color</p>
             <div className="flex gap-2 mt-1">
-              <button className="w-6 h-6 bg-black rounded-full"></button>
-              <button className="w-6 h-6 bg-gray-400 rounded-full"></button>
+              <button className="w-6 h-6 bg-black rounded-full border-solid border-black dark:border-white border-[1px]"></button>
+              <button className="w-6 h-6 bg-gray-400 rounded-full border-solid border-black dark:border-white border-[1px]"></button>
             </div>
           </div>
 
@@ -203,9 +206,11 @@ export default function ProductPage() {
 
           <button
             onClick={handleAddToCart}
-            className="mt-6 bg-black text-white px-4 py-2 rounded hover:bg-gray-600 w-full"
+            className={`mt-6 px-4 py-2 rounded hover:bg-gray-600 w-full font-bold ${
+              darkMode ? "bg-white text-black" : "bg-black text-white"
+            }`}
           >
-            {added ? "Adicionado!" : "Adicionar ao carrinho"}
+            {added ? "ADICIONADO!" : "ADICIONAR AO CARRINHO"}
           </button>
         </div>
       </main>
