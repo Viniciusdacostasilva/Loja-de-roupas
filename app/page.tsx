@@ -101,8 +101,8 @@ export default function ProductPage() {
           : "bg-white text-black min-h-screen"
       }
     >
-      <header className="flex justify-between p-4 border-b border-gray-300 dark:border-gray-700">
-        <h1 className="text-xl font-bold">Store</h1>
+      <header className="flex justify-between items-center p-4 pl-6 pr-5 border-b border-gray-300 dark:border-gray-700">
+        <h1 className="text-3xl font-bold">Store</h1>
         <div className="flex items-center gap-4 relative">
           {session ? (
             <div className="relative">
@@ -148,7 +148,7 @@ export default function ProductPage() {
           ) : (
             <Link
               href="/login"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-400"
             >
               Login
             </Link>
@@ -159,7 +159,7 @@ export default function ProductPage() {
         </div>
       </header>
 
-      <main className="p-6 max-w-4xl mx-auto flex gap-6 overflow-auto">
+      <main className="p-6 max-w-4xl mx-auto md:pt-0 md:flex md:items-center md:justify-center md:h-screen lg:items-start gap-6 m overflow-auto">
         <div className="relative w-1/2 sm:w-full">
           <Image
             src={product.imageUrl || "/image/jaqueta01.jpg"}
@@ -171,11 +171,14 @@ export default function ProductPage() {
           />
         </div>
 
-        <div className="w-1/2 sm:w-full">
-          <h2 className="text-2xl font-bold">{product.name}</h2>
-          <p className="text-lg font-semibold mt-2">R$ {product.price}</p>
-          <p className="text-yellow-500">⭐ 3.9 (512 reviews)</p>
-          <p className="text-lg font-semibold mt-2">{product.description}</p>
+        <div className="w-1/2 sm:w-full sm:pt-5 md:pt-0">
+          <h2 className="sm:text-4xl md:text-2xl font-bold">{product.name}</h2>
+          <div className="flex gap-3">
+            <p className="text-2xl font-semibold mt-2">R$ {product.price}</p>
+            <p className="text-yellow-500 mt-2 text-xl">⭐ 3.9 (512 reviews)</p>
+          </div>
+
+
           <div className="mt-4">
             <p className="font-medium">Color</p>
             <div className="flex gap-2 mt-1">
@@ -200,7 +203,7 @@ export default function ProductPage() {
 
           <button
             onClick={handleAddToCart}
-            className="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+            className="mt-6 bg-black text-white px-4 py-2 rounded hover:bg-gray-600 w-full"
           >
             {added ? "Adicionado!" : "Adicionar ao carrinho"}
           </button>
