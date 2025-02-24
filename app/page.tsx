@@ -45,20 +45,23 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { data: session } = useSession();
-  console.log(session);
   const [menuOpen, setMenuOpen] = useState(false);
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [selectedSize, setSelectedSize] = useState<string | null>(null); // Estado para tamanho selecionado
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   const handleAddToCart = () => {
-    if (product) {
-      addToCart({ ...product, quantity: 1 }); // Passa quantity como 1
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000); // Resetar após 2 segundos
+    if (!product) return;
+    if (!selectedSize) {
+      alert("Por favor, selecione um tamanho antes de adicionar ao carrinho.");
+      return;
     }
+
+    addToCart({ ...product, id: String(product.id), quantity: 1, size: selectedSize });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000); // Resetar após 2 segundos
   };
   
 
@@ -190,13 +193,17 @@ export default function ProductPage() {
             </div>
           </div>
 
-          <div className="mt-4">
-            <p className="font-medium">Size</p>
+            {/* Seletor de Tamanho */}
+            <div className="mt-4">
+            <p className="font-medium">Tamanho</p>
             <div className="flex gap-2 mt-1">
               {["XXS", "XS", "S", "M", "L", "XL"].map((size) => (
                 <button
                   key={size}
-                  className="px-3 py-1 border rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className={`px-3 py-1 border rounded ${
+                    selectedSize === size ? "bg-blue-500 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }`}
+                  onClick={() => setSelectedSize(size)}
                 >
                   {size}
                 </button>
