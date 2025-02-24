@@ -58,15 +58,6 @@ Testefora69
 2. Instale as dependências:
    ```sh
    npm install
-   npm install bcrypt
-   npm install firebase
-   npm install firebase-admin
-   npm install lucide-react
-   npm install next-auth
-   npm install node-firebird
-   npm install react
-   npm install react-dom
-   npm install react-icons
    ```
 
 3. Configure as variáveis de ambiente:
