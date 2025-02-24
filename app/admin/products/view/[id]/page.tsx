@@ -108,7 +108,7 @@ export default function ProductPage() {
 
   return (
     <div className={darkMode ? "dark bg-gray-900 text-white min-h-screen" : "bg-white text-black min-h-screen"}>
-      <header className="flex justify-between p-4 border-b border-gray-300 dark:border-gray-700">
+      <header className="flex justify-between items-center border-b border-gray-300 dark:border-gray-700">
         <h1 className="text-xl font-bold">
           <button
             onClick={() => (window.location.href = "/")}

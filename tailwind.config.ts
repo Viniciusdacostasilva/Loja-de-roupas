@@ -12,7 +12,16 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+
+      screens: {
+        'sm': '370px',
+        'md': '600px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+      }
+    }
+
     },
-  },
   plugins: [],
 } satisfies Config;
