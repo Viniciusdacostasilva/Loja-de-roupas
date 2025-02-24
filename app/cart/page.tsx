@@ -22,30 +22,29 @@ export default function CartPage() {
       ) : (
         <>
           {cart.map((item) => (
-            <div key={item.id} className="flex items-center gap-4 border-b p-4">
+            <div key={`${item.id}-${item.size}`} className="flex items-center gap-4 border-b p-4">
               <Image src={item.imageUrl} alt={item.name} width={80} height={80} />
               <div className="flex-1">
                 <h2 className="font-bold">{item.name}</h2>
-                <p>
-                  R$ {Number(item.price).toFixed(2)} x {item.quantity}
-                </p>
+                <p className="text-gray-500">Tamanho: {item.size}</p> {/* Exibe o tamanho */}
+                <p>R$ {Number(item.price).toFixed(2)} x {item.quantity}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => updateQuantity(item.id, -1)}
+                  onClick={() => updateQuantity(item.id, item.size, -1)}
                   className="text-gray-600 bg-gray-200 px-2 py-1 rounded"
                   disabled={item.quantity <= 1}
                 >
                   -1
                 </button>
                 <button
-                  onClick={() => updateQuantity(item.id, 1)}
+                  onClick={() => updateQuantity(item.id, item.size, 1)}
                   className="text-gray-600 bg-gray-200 px-2 py-1 rounded"
                 >
                   +1
                 </button>
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeFromCart(item.id, item.size)}
                   className="text-red-500"
                 >
                   Remover
