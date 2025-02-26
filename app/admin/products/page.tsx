@@ -1,8 +1,10 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";  // Ícone de seta
 import Image from "next/image";
+
+const categories = ["Casacos", "Vestidos", "Blusas", "Shorts", "Calças", "Acessórios"];
 
 export default function AdminProductsPage() {
   const router = useRouter();
@@ -11,6 +13,7 @@ export default function AdminProductsPage() {
     price: "",
     description: "",
     imageUrl: "",
+    category: "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -21,8 +24,7 @@ export default function AdminProductsPage() {
     return /\.(jpg|jpeg|png|gif|bmp|webp)$/.test(url); // Verifica se a URL termina com uma extensão de imagem válida
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleImageUrlChange = (e: { target: { value: any; }; }) => {
+  const handleImageUrlChange = (e: { target: { value: string; }; }) => {
     const url = e.target.value;
     setNewProduct({ ...newProduct, imageUrl: url });
     
@@ -30,8 +32,7 @@ export default function AdminProductsPage() {
     setIsImageValid(isValidImageUrl(url));
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handlePriceChange = (e: { target: { value: any; }; }) => {
+  const handlePriceChange = (e: { target: { value: string; }; }) => {
     const price = e.target.value;
     // Verifica se o preço é um número válido
     const regex = /^[0-9]*\.?[0-9]*$/; // Regex para permitir apenas números e ponto decimal
@@ -47,7 +48,7 @@ export default function AdminProductsPage() {
     e.preventDefault();
 
     // Validação dos campos
-    if (!newProduct.name || !newProduct.price || !newProduct.description || !newProduct.imageUrl) {
+    if (!newProduct.name || !newProduct.price || !newProduct.description || !newProduct.imageUrl || !newProduct.category) {
       setMessage("❌ Todos os campos são obrigatórios!");
       return;
     }
@@ -76,7 +77,7 @@ export default function AdminProductsPage() {
     setLoading(false);
     if (response.ok) {
       setMessage("✅ Produto adicionado com sucesso!");
-      setNewProduct({ name: "", price: "", description: "", imageUrl: "" });
+      setNewProduct({ name: "", price: "", description: "", imageUrl: "", category: "" });
       setIsImageValid(true); // Reseta a validade da imagem
       setIsPriceValid(true); // Reseta a validade do preço
     } else {
@@ -140,6 +141,23 @@ export default function AdminProductsPage() {
               onChange={handleImageUrlChange} // Atualiza a função de mudança
               className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black"
             />
+          </div>
+
+          <div>
+            <label className="text-lg font-semibold text-gray-800">Categoria</label>
+            <select
+              value={newProduct.category}
+              onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black"
+              required
+            >
+              <option value="">Selecione uma categoria</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
           </div>
 
           {isImageValid && newProduct.imageUrl && (
