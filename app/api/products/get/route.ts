@@ -15,8 +15,9 @@ export async function GET(request: Request) {
     console.log(produto)
  
     return NextResponse.json(produto, { status: 200 });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: "Erro ao buscar produtos" }, { status: 500 });
   }
 }
