@@ -13,8 +13,8 @@ export async function GET() {
     }));
 
     return NextResponse.json(produtos, { status: 200 });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: "Erro ao buscar produtos" }, { status: 500 });
   }
 }
