@@ -104,7 +104,7 @@ export default function ProductPage() {
           : "bg-white text-black min-h-screen"
       }
     >
-      <header className="flex justify-between items-center p-4 border-b">
+      <header className="flex justify-around items-center p-4 border-b">
         <Link href="/" className="text-3xl font-bold">
           Store
         </Link>
@@ -199,14 +199,14 @@ export default function ProductPage() {
               
               <button
                 onClick={handleAddToCart}
-                className={`mt-6 px-4 py-2 w-1/2 font-extrabold ${
+                className={`mt-6 px-4 py-2 w-1/2 font-extrabold rounded ${
                   darkMode ? "bg-light-black text-white" : "bg-light-black text-white shadow-[1px_8px_5px_rgba(0,0,0,0.3)] hover:bg-black"
                 } hover:bg-gray-600`}
               > COMPRAR
               </button>
               <button
                 onClick={handleAddToCart}
-                className={`mt-6 px-4 py-2 sm:w-1/2 md:w-1/3 font-extrabold  ${
+                className={`mt-6 px-4 py-2 sm:w-1/2 md:w-1/3 font-extrabold  rounded ${
                   darkMode ? "text-white border-solid border-[1px] border-white" :  "text-black shadow-[1px_8px_5px_rgba(0,0,0,0.3)]"
                 } hover:bg-gray-600`}
               >
