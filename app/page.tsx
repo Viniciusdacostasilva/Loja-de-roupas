@@ -1,147 +1,111 @@
 "use client";
+
 import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Moon, Sun, ChevronDown } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { useCart } from "../components/CartContent"; // Importe o hook useCart
+import { Moon, Sun, ChevronDown } from "lucide-react";
+import Image from "next/image";
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
-  price: number;
-  description: string;
+  price: string;
+  description: string | null;
   imageUrl: string;
-  quantity: number; // Adicionando a propriedade 'quantity'
+  category: string;
 }
 
-// Hook personalizado para gerenciar o tema
-const useTheme = () => {
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+const categories = ["Todos", "Casacos", "Vestidos", "Blusas", "Shorts", "Calças", "Acessórios"];
+
+export default function HomePage() {
+  const [darkMode, setDarkMode] = useState(
+    typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
+  );
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") {
-        setDarkMode(true);
+      if (savedTheme) {
+        setDarkMode(savedTheme === "dark");
       }
     }
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("theme", darkMode ? "dark" : "light");
-    }
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  const toggleTheme = () => setDarkMode((prev) => !prev);
-
-  return { darkMode, toggleTheme };
-};
-
-export default function ProductPage() {
-  const { darkMode, toggleTheme } = useTheme();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { addToCart } = useCart();
-  const [added, setAdded] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null); // Estado para tamanho selecionado
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
-
-  const handleAddToCart = () => {
-    if (!product) return;
-    if (!selectedSize) {
-      alert("Por favor, selecione um tamanho antes de adicionar ao carrinho.");
-      return;
-    }
-
-    addToCart({ ...product, id: String(product.id), quantity: 1, size: selectedSize });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000); // Resetar após 2 segundos
-  };
-  
-
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProducts = async () => {
       try {
         const response = await fetch("/api/products");
         if (!response.ok) {
-          throw new Error("Erro ao buscar os dados do produto");
+          throw new Error("Erro ao buscar os produtos");
         }
         const data = await response.json();
-        setProduct(data[0]);
+        setProducts(data);
       } catch (err) {
         setError((err as Error).message);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProduct();
+    fetchProducts();
   }, []);
 
-  const isAdmin = session?.user?.is_admin === 1;
-
-  const closeModal = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setIsModalOpen(false);
-    }
-  };
+  const filteredProducts = selectedCategory === "Todos"
+    ? products
+    : products.filter(product => product.category === selectedCategory);
 
   if (loading) return <div>Carregando...</div>;
   if (error) return <div>Erro: {error}</div>;
-  if (!product) return <div>Nenhum produto encontrado.</div>;
 
   return (
     <div
       className={
         darkMode
-          ? "dark bg-black text-white min-h-screen"
+          ? "dark bg-gray-900 text-white min-h-screen"
           : "bg-white text-black min-h-screen"
       }
     >
-      <header className="flex justify-between items-center p-4 pl-6 pr-5 border-b border-gray-300 dark:border-gray-700">
-        <h1 className="text-3xl font-bold">Store</h1>
-        <div className="flex items-center gap-4 relative">
+      <header className="flex justify-between items-center p-4 border-b border-gray-300 dark:border-gray-700 bg-gradient-to-r from-blue-500 to-purple-600">
+        <Link href="/" className="text-2xl font-bold text-white">
+          Store
+        </Link>
+        <div className="flex items-center gap-4">
           {session ? (
             <div className="relative">
               <button
-                onClick={toggleMenu}
-                className="px-4 py-2 bg-blue-600 text-white rounded flex items-center gap-2 hover:bg-blue-700"
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="px-4 py-2 bg-blue-600 text-white rounded flex items-center gap-2"
               >
                 {session.user?.name} <ChevronDown size={18} />
               </button>
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md p-2">
+                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md p-2">
+                  {session.user?.is_admin === 1 && (
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+                  )}
                   <Link
                     href="/cart"
-                    className="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Ver Carrinho
                   </Link>
-                  {isAdmin && (
-                    <>
-                      <Link
-                        href="/dashboard"
-                        className="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/admin/support"
-                        className="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                      >
-                        Ver Suporte
-                      </Link>
-                    </>
-                  )}
                   <button
-                    onClick={() => signOut()}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     Sair
                   </button>
@@ -151,100 +115,62 @@ export default function ProductPage() {
           ) : (
             <Link
               href="/login"
-              className={`px-4 py-2 rounded hover:bg-gray-400 ${
-                darkMode ? "bg-white text-black" : "bg-black text-white"
-              }`}
+              className="bg-blue-600 px-4 py-2 text-white rounded"
             >
               Login
             </Link>
           )}
-          <button onClick={toggleTheme} className="p-2" type="button">
+          <button onClick={() => setDarkMode(!darkMode)} className="p-2">
             {darkMode ? <Sun size={24} /> : <Moon size={24} />}
           </button>
         </div>
       </header>
 
-      <main className="p-6 max-w-4xl mx-auto md:pt-0 md:flex md:items-center md:justify-center md:h-screen lg:items-start gap-6 m overflow-auto">
-        <div className="relative w-1/2 sm:w-full">
-          <Image
-            src={product.imageUrl || "/image/jaqueta01.jpg"}
-            alt={product.name}
-            width={500}
-            height={500}
-            className="rounded-lg cursor-pointer"
-            onClick={() => setIsModalOpen(true)}
-          />
-        </div>
+      <div className="flex">
+        <aside className="w-64 p-4 border-r border-gray-300 dark:border-gray-700">
+          <h3 className="text-xl font-bold mb-4">Categorias</h3>
+          <nav className="flex flex-col gap-2">
+            {categories.map(category => (
+              <button
+                key={category}
+                className={`px-4 py-2 rounded text-left ${
+                  selectedCategory === category
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </nav>
+        </aside>
 
-        <div className="w-1/2 sm:w-full sm:pt-5 md:pt-0">
-          <h2 className="sm:text-4xl md:text-2xl font-bold">{product.name}</h2>
-          <div className="flex gap-3">
-            <p className="text-2xl font-semibold mt-2">R$ {product.price}</p>
-            <p className="text-yellow-500 mt-2 text-xl">⭐ 3.9 (512 reviews)</p>
-          </div>
-          <p className="pt-2"> {product.description} </p>
-
-
-          <div className="mt-4">
-            <p className="font-medium">Color</p>
-            <div className="flex gap-2 mt-1">
-              <button className="w-6 h-6 bg-black rounded-full border-solid border-black dark:border-white border-[1px]"></button>
-              <button className="w-6 h-6 bg-gray-400 rounded-full border-solid border-black dark:border-white border-[1px]"></button>
-            </div>
-          </div>
-
-            {/* Seletor de Tamanho */}
-            <div className="mt-4">
-            <p className="font-medium">Tamanho</p>
-            <div className="flex gap-2 mt-1">
-              {["XXS", "XS", "S", "M", "L", "XL"].map((size) => (
-                <button
-                  key={size}
-                  className={`px-3 py-1 border rounded ${
-                    selectedSize === size ? "bg-blue-500 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                  onClick={() => setSelectedSize(size)}
+        <main className="p-6 flex-1">
+          <h2 className="text-3xl font-bold text-center mb-6">Nossos Produtos</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="border rounded-lg p-4 shadow-md">
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  width={500}
+                  height={500}
+                  className="w-full h-50 object-cover rounded-lg"
+                />
+                <h3 className="text-xl font-semibold mt-2">{product.name}</h3>
+                <p className="text-gray-600 dark:text-gray-300">R$ {product.price}</p>
+                <Link
+                  href={`admin/products/view/${product.id}`}
+                  className="block mt-2 bg-blue-500 text-white px-4 py-2 text-center rounded"
                 >
-                  {size}
-                </button>
-              ))}
-            </div>
+                  Ver Detalhes
+                </Link>
+              </div>
+            ))}
           </div>
-
-          <button
-            onClick={handleAddToCart}
-            className={`mt-6 px-4 py-2 rounded hover:bg-gray-600 w-full font-bold ${
-              darkMode ? "bg-white text-black" : "bg-black text-white"
-            }`}
-          >
-            {added ? "ADICIONADO!" : "ADICIONAR AO CARRINHO"}
-          </button>
-        </div>
-      </main>
-
-      {/* Modal de Zoom */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
-          onClick={closeModal}
-        >
-          <div className="relative bg-white rounded-lg shadow-lg max-w-4xl w-full flex justify-center items-center">
-            <Image
-              src={product.imageUrl || "/image/jaqueta01.jpg"}
-              alt={product.name}
-              width={800}
-              height={800}
-              className="rounded-lg w-auto h-auto max-w-full max-h-full object-contain"
-            />
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 bg-gray-800 text-white rounded-full p-2"
-            >
-              Fechar
-            </button>
-          </div>
-        </div>
-      )}
+        </main>
+      </div>
     </div>
   );
 }
