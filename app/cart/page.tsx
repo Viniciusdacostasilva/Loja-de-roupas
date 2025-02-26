@@ -1,18 +1,13 @@
 "use client";
 
 import { useCart } from "components/CartContent";
-import { useEffect } from "react";
+
 import Image from "next/image";
 
 export default function CartPage() {
-  const { cart, removeFromCart, total, clearCart, updateQuantity, setUserEmail } = useCart();
+  const { cart, removeFromCart, total, clearCart, updateQuantity } = useCart();
 
-  useEffect(() => {
-    const email = localStorage.getItem("userEmail"); // Buscar o e-mail salvo no login
-    if (email) {
-      setUserEmail(email); // Salvar o e-mail no contexto
-    }
-  }, [setUserEmail]);
+
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
