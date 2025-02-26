@@ -17,45 +17,53 @@ interface CartContextType {
   updateQuantity: (id: string, size: string, change: number) => void;
   clearCart: () => void;
   total: number;
-  setUserEmail: (email: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<Product[]>([]);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+ 
 
   // Carregar carrinho do localStorage baseado no e-mail
-  const loadCart = (email: string) => {
-    const storedCart = localStorage.getItem(`cart-${email}`);
+  const loadCart = () => {
+    const storedCart = localStorage.getItem(`cart`);
     if (storedCart) setCart(JSON.parse(storedCart));
   };
 
   useEffect(() => {
-    if (userEmail) loadCart(userEmail);
-  }, [userEmail]);
+    loadCart();
+  }, []);
 
   useEffect(() => {
     const saveCart = setTimeout(() => {
-      if (userEmail) {
-        localStorage.setItem(`cart-${userEmail}`, JSON.stringify(cart));
-      }
+     
+        localStorage.setItem(`cart`, JSON.stringify(cart));
+      
     }, 300); 
     return () => clearTimeout(saveCart);
-  }, [cart, userEmail]);
+  }, [cart, ]);
 
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
       const existing = prevCart.find((p) => p.id === product.id && p.size === product.size);
+      let updatedCart;
       if (existing) {
-        return prevCart.map((p) =>
+        updatedCart = prevCart.map((p) =>
           p.id === product.id && p.size === product.size
             ? { ...p, quantity: p.quantity + 1 }
             : p
         );
+      } else {
+        updatedCart = [...prevCart, { ...product, quantity: 1 }];
       }
-      return [...prevCart, { ...product, quantity: 1 }];
+      console.log()
+       
+  
+        localStorage.setItem(`cart`, JSON.stringify(updatedCart));
+      console.log(localStorage.getItem(`cart`))
+      
+      return updatedCart;
     });
   };
 
@@ -75,15 +83,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
-    if (userEmail) {
-      localStorage.removeItem(`cart-${userEmail}`);
-    }
+     
+      localStorage.removeItem(`cart`);
+    
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, total, setUserEmail }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, total }}>
       {children}
     </CartContext.Provider>
   );
