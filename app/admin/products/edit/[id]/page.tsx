@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
 
+const categories = ["Casacos", "Vestidos", "Blusas", "Shorts", "Calças", "Acessórios"];
+
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const unwrappedParams = use(params);
@@ -14,6 +16,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     price: "",
     description: "",
     imageUrl: "",
+    category: "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -37,6 +40,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               price: productData.price.toString() || "", // Garante que seja uma string
               description: productData.description || "", // Garante que seja uma string
               imageUrl: productData.imageUrl || "", // Garante que seja uma string
+              category: productData.category || "", // Garante que seja uma string
             });
           } else {
             console.error("Produto não encontrado");
@@ -63,7 +67,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     e.preventDefault();
 
     // Validação dos campos
-    if (!product.name || !product.price || !product.description || !product.imageUrl) {
+    if (!product.name || !product.price || !product.description || !product.imageUrl || !product.category) {
       setMessage("❌ Todos os campos são obrigatórios!");
       return;
     }
@@ -166,6 +170,23 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black"
               required
             />
+          </div>
+
+          <div>
+            <label className="text-lg font-semibold text-gray-800">Categoria</label>
+            <select
+              value={product.category}
+              onChange={(e) => setProduct({ ...product, category: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black"
+              required
+            >
+              <option value="">Selecione uma categoria</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
           </div>
 
           {product.imageUrl && (
