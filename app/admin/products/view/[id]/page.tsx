@@ -113,12 +113,12 @@ export default function ProductPage() {
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="px-4 py-2 bg-blue-600 text-white rounded flex items-center gap-2"
+                className="px-4 py-2 bg-light-black text-white rounded flex items-center gap-2"
               >
                 {session.user?.name} <ChevronDown size={18} />
               </button>
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md p-2">
+                <div className="absolute right-0 mt-2 w-48 z-20 bg-white shadow-lg rounded-md p-2">
                   {session.user?.is_admin === 1 && (
                     <Link
                       href="/dashboard"
@@ -145,7 +145,7 @@ export default function ProductPage() {
           ) : (
             <Link
               href="/login"
-              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-600"
+              className={`px-4 py-2 rounded hover:bg-gray-600 ${darkMode ? "bg-white text-black" : "bg-black text-white"}`}
             >
               Login
             </Link>
@@ -156,7 +156,7 @@ export default function ProductPage() {
         </div>
       </header>
 
-      <main className="p-6 max-w-4xl mx-auto flex flex-col md:flex-row gap-6">
+      <main className="p-6 max-w-4xl mx-auto flex flex-col items-center md:flex-row gap-6">
         <div className="relative w-1/2 sm:w-full">
           <Image
             src={product.imageUrl || "/image/jaqueta01.jpg"}
@@ -179,10 +179,14 @@ export default function ProductPage() {
                 <button
                   key={size}
                   className={`px-3 py-1 border rounded ${
-                    selectedSize === size
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
+                    selectedSize === size && darkMode
+                      ? "bg-white text-black"
+                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }
+                    ${selectedSize === size && !darkMode 
+                      ? "bg-black text-white": "hover:bg-gray-200"
+                    }
+                  `}
                   onClick={() => setSelectedSize(size)}
                 >
                   {size}
@@ -190,15 +194,25 @@ export default function ProductPage() {
               ))}
             </div>
           </div>
-
-          <button
-            onClick={handleAddToCart}
-            className={`mt-6 px-4 py-2 w-full font-bold rounded ${
-              darkMode ? "bg-white text-black" : "bg-black text-white"
-            } hover:bg-gray-600`}
-          >
-            {added ? "ADICIONADO!" : "ADICIONAR AO CARRINHO"}
-          </button>
+          
+            <div className="flex gap-4">
+              
+              <button
+                onClick={handleAddToCart}
+                className={`mt-6 px-4 py-2 w-1/2 font-extrabold ${
+                  darkMode ? "bg-light-black text-white" : "bg-light-black text-white shadow-[1px_8px_5px_rgba(0,0,0,0.3)] hover:bg-black"
+                } hover:bg-gray-600`}
+              > COMPRAR
+              </button>
+              <button
+                onClick={handleAddToCart}
+                className={`mt-6 px-4 py-2 sm:w-1/2 md:w-1/3 font-extrabold  ${
+                  darkMode ? "text-white border-solid border-[1px] border-white" :  "text-black shadow-[1px_8px_5px_rgba(0,0,0,0.3)]"
+                } hover:bg-gray-600`}
+              >
+                {added ? "ADICIONADO!" : "+CARRINHO"}
+              </button>
+            </div>
         </div>
       </main>
     </div>
