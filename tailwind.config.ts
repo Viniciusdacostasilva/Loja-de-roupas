@@ -14,6 +14,7 @@ export default {
         "light-black": "#393939",
         "white-buttons": "#F8F7F7",
         "light-black-200": "2A2A2A",
+        "link-gray": "#818181",
       },
 
       screens: {
