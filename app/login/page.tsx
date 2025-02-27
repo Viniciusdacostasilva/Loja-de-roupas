@@ -34,7 +34,7 @@ export default function LoginPage() {
       {/* Lado esquerdo (Login) */}
       <div className="flex flex-col items-center justify-center w-full md:w-1/2 min-h-screen p-6">
         <div className="bg-white w-full max-w-sm p-8 rounded-2xl shadow-2xl text-black relative">
-          <div className="text-center">
+          <div className="">
             <h1 className="text-3xl font-bold text-gray-900">LOGO</h1>
             <p className="text-sm text-gray-500 mt-1">Sejam bem-vindos</p>
             <h2 className="text-2xl font-extrabold mt-2">FAÇA LOGIN</h2>
