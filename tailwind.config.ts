@@ -11,6 +11,7 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        "background-black": "#1C1C1C",
         "light-black": "#393939",
         "white-buttons": "#F8F7F7",
         "light-black-200": "2A2A2A",
