@@ -51,13 +51,13 @@ export default function CartPage() {
                   <Image src={item.imageUrl} alt={item.name} width={80} height={80} />
                   <div className="flex-1">
                     <h2 className="font-bold whitespace-nowrap  ">{item.name}</h2>
-                    <p className="text-gray-400 whitespace-nowrap">Tamanho: {item.size}</p>
+                    <p className="whitespace-nowrap">Tamanho: {item.size}</p>
                     <p className="whitespace-nowrap">R$ {Number(item.price).toFixed(2)} x {item.quantity}</p>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-2 w-full sm:w-auto">
                     <div className="flex items-center gap-2">
-                      <button onClick={() => updateQuantity(item.id, item.size, -1)} className="text-gray-200 bg-gray-700 px-2 py-1 rounded" disabled={item.quantity <= 1}>-1</button>
-                      <button onClick={() => updateQuantity(item.id, item.size, 1)} className="text-gray-200 bg-gray-700 px-2 py-1 rounded">+1</button>
+                      <button onClick={() => updateQuantity(item.id, item.size, -1)} className="text-gray-200 bg-light-black px-2 py-1 rounded" disabled={item.quantity <= 1}>-1</button>
+                      <button onClick={() => updateQuantity(item.id, item.size, 1)} className="text-gray-200 bg-light-black px-2 py-1 rounded">+1</button>
                     </div>
                     <button onClick={() => removeFromCart(item.id, item.size)} className="text-red-400">Remover</button>
                   </div>
@@ -65,14 +65,14 @@ export default function CartPage() {
               ))
             )}
 
-            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded">
+            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl">
               <div>
                 <div>Produtos:  </div>
                 <div>Valor: {total}</div>
               </div>
-              <div className="flex flex-col">
-                <Link href="#">+Inserir Cupom</Link>
-                <button className="bg-light-black p-2 pr-12 pl-12 sm:mt-1 md:mt-4">
+              <div className="flex flex-col ">
+                <Link href="#" className="font-bold hover: ">+Inserir Cupom</Link>
+                <button className=" p-2 pr-12 pl-12 sm:mt-1 md:mt-4 shadow-[1px_4px_5px_rgba(0,0,0,0.3)] font-black">
                   <Link href="#">COMPRAR</Link>
                 </button>
               </div>
