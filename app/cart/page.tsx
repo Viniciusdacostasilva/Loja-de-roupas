@@ -50,11 +50,11 @@ export default function CartPage() {
                 <div key={`${item.id}-${item.size}`} className="flex flex-col lg:min-w-[550px] sm:flex-row gap-4 sm:pr-4 lg:p-4 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] mb-4">
                   <Image src={item.imageUrl} alt={item.name} width={80} height={80} />
                   <div className="flex-1">
-                    <h2 className="font-bold whitespace-nowrap  ">{item.name}</h2>
-                    <p className="whitespace-nowrap">Tamanho: {item.size}</p>
+                    <h2 className="font-black text-lg">{item.name}</h2>
+                    <p className=" whitespace-nowrap">Tamanho: {item.size}</p>
                     <p className="whitespace-nowrap">R$ {Number(item.price).toFixed(2)} x {item.quantity}</p>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <div className="flex flex-wrap items-center justify-between w-full sm:w-auto gap-2">
                     <div className="flex items-center gap-2">
                       <button onClick={() => updateQuantity(item.id, item.size, -1)} className="text-gray-200 bg-light-black px-2 py-1 rounded" disabled={item.quantity <= 1}>-1</button>
                       <button onClick={() => updateQuantity(item.id, item.size, 1)} className="text-gray-200 bg-light-black px-2 py-1 rounded">+1</button>
@@ -65,14 +65,14 @@ export default function CartPage() {
               ))
             )}
 
-            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl">
+            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl sm:mt-8 md:mt-0">
               <div>
                 <div>Produtos:  </div>
                 <div>Valor: {total}</div>
               </div>
               <div className="flex flex-col ">
-                <Link href="#" className="font-bold hover: ">+Inserir Cupom</Link>
-                <button className=" p-2 pr-12 pl-12 sm:mt-1 md:mt-4 shadow-[1px_4px_5px_rgba(0,0,0,0.3)] font-black">
+                <Link href="#" className="font-bold hover:text-gray-400 ">+Inserir Cupom</Link>
+                <button className={`p-2 pr-12 pl-12 sm:mt-1 md:mt-4 shadow-[1px_4px_5px_rgba(0,0,0,0.3)] font-black ${darkMode ? "hover:bg-white hover:text-black" : "hover:bg-black hover:text-white"}`}>
                   <Link href="#">COMPRAR</Link>
                 </button>
               </div>
