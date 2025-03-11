@@ -1,8 +1,7 @@
 "use client";
 
 import { useCart } from "components/CartContent";
-import { ChevronDown, Moon, Sun } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { Moon, Sun } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,14 +11,6 @@ export default function CartPage() {
     typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
   );
   const { cart, removeFromCart, total, clearCart, updateQuantity } = useCart();
-
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCVV, setCardCVV] = useState("");
-
-  const { data: session } = useSession();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -73,7 +64,22 @@ export default function CartPage() {
                 </div>
               ))
             )}
+
+            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded">
+              <div>
+                <div>Produtos:  </div>
+                <div>Valor: {total}</div>
+              </div>
+              <div className="flex flex-col">
+                <Link href="#">+Inserir Cupom</Link>
+                <button className="bg-light-black p-2 pr-12 pl-12 sm:mt-1 md:mt-4">
+                  <Link href="#">COMPRAR</Link>
+                </button>
+              </div>
+            </div>
           </div>
+
+          
         </div>
       </div>
 
