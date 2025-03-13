@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useCart } from "@/components/CartContent";
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   description: string;
@@ -84,7 +84,7 @@ export default function ProductPage() {
 
     addToCart({
       ...product,
-      id: String(product.id),
+      id: String(product.id), // Certifique-se de que o ID é uma string
       quantity: 1,
       size: selectedSize,
     });
