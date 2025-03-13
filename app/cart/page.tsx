@@ -67,7 +67,7 @@ export default function CartPage() {
 
             <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl sm:mt-8 md:mt-0">
               <div>
-                <div>Produtos:  </div>
+                <div>Produtos: {cart.length}</div>
                 <div>Valor: {total}</div>
               </div>
               <div className="flex flex-col ">
