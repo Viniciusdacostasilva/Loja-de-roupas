@@ -1,11 +1,10 @@
-import NextAuth from "next-auth";
-import { AuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig"; // Importe o auth corretamente
 import { getUserFromDatabase } from "@/lib/db"; // Importe a função para buscar usuário do banco de dados
 
-export const authOptions: AuthOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Firebase",
@@ -45,14 +44,14 @@ export const authOptions: AuthOptions = {
             is_admin: userData.is_admin, // Define is_admin com base no banco de dados
             image: user.photoURL,
           };
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
-          console.error("Erro de autenticação:", error);
-          throw new Error("Erro ao fazer login: " + (error.message || "Erro desconhecido"));
-        }
-      },
+        } catch (error: unknown) {
+            console.error("Erro de autenticação:", error);
+            const errorMessage = (error as Error).message || "Erro desconhecido";
+            throw new Error("Erro ao fazer login: " + errorMessage);
+          }
+      }
     }),
-  ],
+  ],  
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 dias
