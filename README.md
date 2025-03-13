@@ -37,6 +37,9 @@ Testefora69
 ├── 🏠 Page.tsx                  #Página principal ou seja a home do projeto 
 -------------------------------------------------------------------- As páginas entre admin e registro estão dentro da /app
 ├── components/                  # Componentes utilizados no projeto como Api do carrinho e SessionProvider
+     |---CartContent.tsx         #Backend do carrinho de compras
+     |---CartItems.tsx           #Frontend do carrinho de compras
+
 │── public/                      # Arquivos estáticos
 ├── types/                       # Funções auxiliares
 ├── lib/                         # Integração com Firebase e APIs
