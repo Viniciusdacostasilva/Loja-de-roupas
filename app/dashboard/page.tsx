@@ -95,25 +95,27 @@ export default function Dashboard() {
 
   return (
     <div className={darkMode ? "dark bg-background-black text-white min-h-screen" : "bg-white text-black min-h-screen"}>
-      <header className="flex justify-between p-4 border-b border-gray-300 dark:border-gray-700">
-        <h1 className="text-xl font-bold">
-          <button
-            onClick={() => (window.location.href = "/")}
-            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
-          >
+
+      <header className="flex justify-around items-center p-4 border-b border-white-buttons z-20">
+        <div className="flex gap-2">
+          <Link href="/" className="text-2xl font-bold">
             Store
-          </button>
-        </h1>
+          </Link>
+        </div> 
+
         <div className="flex items-center gap-4">
-          {session ? (
-            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-red-500 px-4 py-2 text-white rounded">
-              Sair
-            </button>
-          ) : (
-            <Link href="/login" className="bg-blue-600 px-4 py-2 text-white rounded">
-              Login
-            </Link>
-          )}
+          <div className="flex items-center gap-4">
+            {session ? (
+              <button onClick={() => signOut({ callbackUrl: "/" })} className={`px-4 py-2 rounded ${darkMode ? "hover:bg-white hover:text-black bg-light-black" : "hover:bg-background-black hover:text-white bg-light-black"}`}>
+                Sair
+              </button>
+            ) : (
+              <Link href="/login" className="px-4 py-2 text-white rounded">
+                Login
+              </Link>
+            )}
+          </div>
+
           <button onClick={() => setDarkMode(!darkMode)} className="p-2">
             {darkMode ? <Sun size={24} /> : <Moon size={24} />}
           </button>

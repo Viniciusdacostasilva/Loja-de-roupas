@@ -96,17 +96,17 @@ export function CartItems() {
               ))
             )}
 
-            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl sm:mt-8 md:mt-0">
+            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-6 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl sm:mt-8 md:mt-0">
               <div>
                 <div>Produtos: {cart.length}</div>
                 <div>Valor: R$ {Number(total).toFixed(2)}</div>
               </div>
-              <div className="flex flex-col">
-                <Link href="#" className="font-bold hover:text-gray-400">
+              <div className="flex flex-col sm:w-full sm:gap-y-4 md:gap-y-0 md:w-fit">
+                <Link href="#" className="font-bold hover:text-gray-400 md:text-start sm:text-end">
                   +Inserir Cupom
                 </Link>
                 <button
-                  className={`p-2 pr-12 pl-12 sm:mt-1 md:mt-4 shadow-[1px_4px_5px_rgba(0,0,0,0.3)] font-black ${
+                  className={`p-2 pr-12 pl-12 sm:mt-1 sm:w-full md:mt-4 shadow-[1px_4px_5px_rgba(0,0,0,0.3)] font-black ${
                     darkMode
                       ? "hover:bg-white hover:text-black"
                       : "hover:bg-black hover:text-white"

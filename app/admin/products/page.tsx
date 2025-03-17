@@ -86,9 +86,9 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-background-black p-6">
       <div className="relative max-w-2xl w-full bg-white p-6 rounded-xl shadow-lg">
-        <button onClick={() => router.back()} className="absolute top-4 left-4 text-blue-600 hover:text-blue-800">
+        <button onClick={() => router.back()} className="absolute top-4 left-4 text-black hover:text-light-black">
           <FaArrowLeft size={24} />
         </button>
 
@@ -177,7 +177,7 @@ export default function AdminProductsPage() {
 
           <button
             type="submit"
-            className="w-full p-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-all font-semibold"
+            className="w-full p-3 text-white bg-light-black rounded-md hover:bg-background-black transition-all font-semibold"
             disabled={loading}
           >
             {loading ? "Adicionando..." : "Adicionar Produto"}
