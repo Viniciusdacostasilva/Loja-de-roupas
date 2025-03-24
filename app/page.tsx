@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { Moon, Sun, ChevronDown } from "lucide-react";
+import { Moon, Sun, ChevronDown, ShoppingCart, X, Menu } from "lucide-react";
 import Image from "next/image";
 
 interface Product {
@@ -22,11 +22,12 @@ export default function HomePage() {
     typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
   );
   const [products, setProducts] = useState<Product[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { data: session } = useSession();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Todos");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -63,81 +64,122 @@ export default function HomePage() {
     ? products
     : products.filter(product => product.category === selectedCategory);
 
-  if (loading) return <div>Carregando...</div>;
-  if (error) return <div>Erro: {error}</div>;
-
   return (
-    <div
-      className={
-        darkMode
-          ? "dark bg-gray-900 text-white min-h-screen"
-          : "bg-white text-black min-h-screen"
-      }
-    >
-      <header className="flex justify-between items-center p-4 border-b border-gray-300 dark:border-gray-700 bg-gradient-to-r from-blue-500 to-purple-600">
-        <Link href="/" className="text-2xl font-bold text-white">
-          Store
-        </Link>
-        <div className="flex items-center gap-4">
-          {session ? (
-            <div className="relative">
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="px-4 py-2 bg-blue-600 text-white rounded flex items-center gap-2"
-              >
-                {session.user?.name} <ChevronDown size={18} />
-              </button>
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md p-2">
-                  {session.user?.is_admin === 1 && (
+    <div className={`${darkMode ? "dark bg-background-black text-white" : "bg-white text-black"} min-h-screen transition-all`}>
+
+      <header className="w-full h-16 p-4">
+            <div className="flex justify-between items-center max-w-6xl mx-auto">
+              <Link href="/" className="text-3xl font-bold">
+                Store
+              </Link>
+
+              {/* Menu Desktop */}
+              <div className="hidden md:flex items-center gap-4 relative">
+                {session ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setMenuOpen(!menuOpen)}
+                      className={`px-4 py-2 bg-light-black hover:bg-black text-white rounded flex items-center gap-2`
+                      }
+                    >
+                      {session.user?.name} <ChevronDown size={18} />
+                    </button>
+                    {menuOpen && (
+                      <div className="absolute right-0 mt-2 w-48 z-20 bg-white shadow-lg rounded-md p-2">
+                        {session.user?.is_admin === 1 && (
+                          <Link
+                            href="/dashboard"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Dashboard
+                          </Link>
+                        )}
+                        <Link
+                          href="/cart"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        >
+                          Ver Carrinho
+                        </Link>
+                        <button
+                          onClick={() => signOut()}
+                          className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                        >
+                          Sair
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="px-4 py-2 rounded hover:bg-gray-600 bg-black text-white"
+                  >
+                    Login
+                  </Link>
+                )}
+                <button onClick={() => setDarkMode(!darkMode)} className="p-2">
+                  {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+                </button>
+              </div>
+
+              {/* Menu Mobile */}
+              <div className="md:hidden flex items-center">
+                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2">
+                  {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Dropdown Mobile */}
+            {mobileMenuOpen && (
+              <div className="md:hidden mt-4 bg-white dark:bg-gray-800 shadow-lg p-4 absolute left-0 right-0 z-20">
+                <button onClick={() => setDarkMode(!darkMode)} className="p-2 flex items-center gap-2">
+                  {darkMode ? <Sun size={24} /> : <Moon size={24} />} <span>Modo Escuro</span>
+                </button>
+                {session ? (
+                  <>
+                    {session.user?.is_admin === 1 && (
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      >
+                        Dashboard
+                      </Link>
+                    )}
                     <Link
-                      href="/dashboard"
+                      href="/cart"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
-                      Dashboard
+                      Ver Carrinho
                     </Link>
-                  )}
+                    <button
+                      onClick={() => signOut()}
+                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                    >
+                      Sair
+                    </button>
+                  </>
+                ) : (
                   <Link
-                    href="/cart"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    href="/login"
+                    className="block px-4 py-2 rounded hover:bg-gray-600 bg-black text-white text-center"
                   >
-                    Ver Carrinho
+                    Login
                   </Link>
-                  <button
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                  >
-                    Sair
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="bg-blue-600 px-4 py-2 text-white rounded"
-            >
-              Login
-            </Link>
-          )}
-          <button onClick={() => setDarkMode(!darkMode)} className="p-2">
-            {darkMode ? <Sun size={24} /> : <Moon size={24} />}
-          </button>
-        </div>
-      </header>
+                )}
+              </div>
+            )}
+          </header>
+
 
       <div className="flex">
-        <aside className="w-64 p-4 border-r border-gray-300 dark:border-gray-700">
+        <aside className="w-64 p-6 border-r border-gray-300 dark:border-gray-700 hidden md:block">
           <h3 className="text-xl font-bold mb-4">Categorias</h3>
           <nav className="flex flex-col gap-2">
             {categories.map(category => (
               <button
                 key={category}
-                className={`px-4 py-2 rounded text-left ${
-                  selectedCategory === category
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
+                className={`px-4 py-2 rounded text-left border-solid border-2 ${selectedCategory === category && darkMode ? "bg-white-buttons text-black" : "hover:bg-light-black hover:text-white"} ${selectedCategory === category && !darkMode ? "bg-background-black text-white" : "hover:bg-light-black hover:text-white}"}`}
                 onClick={() => setSelectedCategory(category)}
               >
                 {category}
@@ -148,24 +190,34 @@ export default function HomePage() {
 
         <main className="p-6 flex-1">
           <h2 className="text-3xl font-bold text-center mb-6">Nossos Produtos</h2>
+          {loading && <div className="text-center">Carregando...</div>}
+          {error && <div className="text-center text-red-600">Erro: {error}</div>}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="border rounded-lg p-4 shadow-md">
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  width={500}
-                  height={500}
-                  className="w-full h-50 object-cover rounded-lg"
-                />
-                <h3 className="text-xl font-semibold mt-2">{product.name}</h3>
-                <p className="text-gray-600 dark:text-gray-300">R$ {product.price}</p>
-                <Link
-                  href={`admin/products/view/${product.id}`}
-                  className="block mt-2 bg-blue-500 text-white px-4 py-2 text-center rounded"
-                >
-                  Ver Detalhes
-                </Link>
+              <div 
+                key={product.id} 
+                className="border rounded-lg p-4 shadow-md transition-transform transform hover:scale-105 min-h-[400px] flex flex-col"
+              >
+                <div className="w-full h-[450px]">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    width={500}
+                    height={500}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+                <div className="flex flex-col flex-grow justify-between mt-2">
+                  <h3 className="text-xl font-semibold">{product.name}</h3>
+                  <p className={` ${darkMode ? "text-gray-300" : "text-gray-800"}`}>R$ {product.price}</p>
+                  <Link 
+                    href={`admin/products/view/${product.id}`} 
+                    className="block mt-2 bg-blue-600 text-white px-4 py-2 text-center rounded"
+                  >
+                    Ver Detalhes
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
