@@ -179,7 +179,7 @@ export default function HomePage() {
             {categories.map(category => (
               <button
                 key={category}
-                className={`px-4 py-2 rounded text-left ${selectedCategory === category ? "bg-blue-600 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+                className={`px-4 py-2 rounded text-left border-solid border-2 ${selectedCategory === category && darkMode ? "bg-white-buttons text-black" : "hover:bg-light-black hover:text-white"} ${selectedCategory === category && !darkMode ? "bg-background-black text-white" : "hover:bg-light-black hover:text-white}"}`}
                 onClick={() => setSelectedCategory(category)}
               >
                 {category}
@@ -192,19 +192,32 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold text-center mb-6">Nossos Produtos</h2>
           {loading && <div className="text-center">Carregando...</div>}
           {error && <div className="text-center text-red-600">Erro: {error}</div>}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="border rounded-lg p-4 shadow-md transition-transform transform hover:scale-105">
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  width={500}
-                  height={500}
-                  className="w-full h-50 object-cover rounded-lg"
-                />
-                <h3 className="text-xl font-semibold mt-2">{product.name}</h3>
-                <p className="text-gray-600 dark:text-gray-300">R$ {product.price}</p>
-                <Link href={`admin/products/view/${product.id}`} className="block mt-2 bg-blue-600 text-white px-4 py-2 text-center rounded">Ver Detalhes</Link>
+              <div 
+                key={product.id} 
+                className="border rounded-lg p-4 shadow-md transition-transform transform hover:scale-105 min-h-[400px] flex flex-col"
+              >
+                <div className="w-full h-[450px]">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    width={500}
+                    height={500}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+                <div className="flex flex-col flex-grow justify-between mt-2">
+                  <h3 className="text-xl font-semibold">{product.name}</h3>
+                  <p className={` ${darkMode ? "text-gray-300" : "text-gray-800"}`}>R$ {product.price}</p>
+                  <Link 
+                    href={`admin/products/view/${product.id}`} 
+                    className="block mt-2 bg-blue-600 text-white px-4 py-2 text-center rounded"
+                  >
+                    Ver Detalhes
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
