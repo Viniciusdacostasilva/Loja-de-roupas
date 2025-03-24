@@ -67,7 +67,7 @@ export default function HomePage() {
   return (
     <div className={`${darkMode ? "dark bg-background-black text-white" : "bg-white text-black"} min-h-screen transition-all`}>
 
-      <header className="w-full h-64 p-4">
+      <header className="w-full h-16 p-4">
             <div className="flex justify-between items-center max-w-6xl mx-auto">
               <Link href="/" className="text-3xl font-bold">
                 Store
