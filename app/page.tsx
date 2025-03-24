@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { Moon, Sun, ChevronDown, ShoppingCart, X, Menu } from "lucide-react";
+import { Moon, Sun, ChevronDown, X, Menu } from "lucide-react";
 import Image from "next/image";
 
 interface Product {
