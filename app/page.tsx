@@ -193,13 +193,13 @@ export default function HomePage() {
           {loading && <div className="text-center">Carregando...</div>}
           {error && <div className="text-center text-red-600">Erro: {error}</div>}
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <div 
                 key={product.id} 
                 className="border rounded-lg p-4 shadow-md transition-transform transform hover:scale-105 min-h-[400px] flex flex-col"
               >
-                <div className="w-full h-[450px]">
+                <div className="w-full sm:h-[300px] md:h-[450px]">
                   <Image
                     src={product.imageUrl}
                     alt={product.name}
