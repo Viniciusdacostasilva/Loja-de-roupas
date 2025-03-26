@@ -215,7 +215,7 @@ export default function HomePage() {
         <div className="md:hidden w-full">
           <Swiper
             spaceBetween={10}
-            autoplay={{ delay: 15000, disableOnInteraction: false }}
+            autoplay={{ delay: 8000, disableOnInteraction: false }}
             modules={[Autoplay]}
             className="w-full h-[250px]"
           >
@@ -257,24 +257,29 @@ export default function HomePage() {
       </div>
 
 
-      <div className="flex">
-        <aside className="w-64 p-6 border-r border-gray-300 dark:border-gray-700 hidden md:block">
-          <h3 className="text-xl font-bold mb-4">Categorias</h3>
-          <nav className="flex flex-col gap-2">
-            {categories.map(category => (
-              <button
-                key={category}
-                className={`px-4 py-2 rounded text-left border-solid border-2 ${selectedCategory === category && darkMode ? "bg-white-buttons text-black" : "hover:bg-light-black hover:text-white"} ${selectedCategory === category && !darkMode ? "bg-background-black text-white" : "hover:bg-light-black hover:text-white}"}`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </nav>
-        </aside>
+      <div className="flex md:flex-row sm:flex-col">
+      <div className="flex sm:flex-row md:flex-row overflow-x-auto">
+          {/* Container extra para o background ocupar toda a rolagem */}
+          <div className={`min-w-full sm:min-w-max bg-background-black dark:bg-light-black`}>
+            <aside className="min-w-64 p-6 border-r border-gray-300 dark:border-black md:block">
+              <h3 className="text-xl font-bold mb-4 text-white">Categorias</h3>
+              <nav className="flex sm:flex-row md:flex-col gap-2 w-max">
+                {categories.map(category => (
+                  <button
+                    key={category}
+                    className={`px-4 w-[150px] py-2 rounded text-left border-solid border-2 ${selectedCategory === category ? "bg-white-buttons text-black" : "hover:text-white text-white"} ${selectedCategory === category && !darkMode ? "bg-white text-black" : "hover:text-white"} ${darkMode ? "hover:bg-background-black hover:text-white" : "hover:bg-light-black"}`}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </nav>
+            </aside>
+          </div>
+      </div>
 
-        <main className="p-6 flex-1">
-          <h2 className="text-3xl font-bold text-center mb-6">Nossos Produtos</h2>
+        <main className={`p-6 flex-1`}>
+          <h2 className="sm:text-xl md:text-3xl font-bold text-center mb-6">Nossos Produtos</h2>
           {loading && <div className="text-center">Carregando...</div>}
           {error && <div className="text-center text-red-600">Erro: {error}</div>}
           
@@ -298,7 +303,7 @@ export default function HomePage() {
                   <p className={` ${darkMode ? "text-gray-300" : "text-gray-800"}`}>R$ {product.price}</p>
                   <Link 
                     href={`admin/products/view/${product.id}`} 
-                    className="block mt-2 bg-blue-600 text-white px-4 py-2 text-center rounded"
+                    className={`block mt-2 bg-black  text-white px-4 py-2 text-center rounded ${ darkMode ? "hover:bg-white hover:text-light-black" : "hover:bg-light-black hover:text-white"}`}
                   >
                     Ver Detalhes
                   </Link>
