@@ -5,6 +5,11 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { Moon, Sun, ChevronDown, X, Menu } from "lucide-react";
 import Image from "next/image";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
+import { Pagination, Autoplay } from 'swiper/modules';
 
 interface Product {
   id: string;
@@ -169,7 +174,87 @@ export default function HomePage() {
                 )}
               </div>
             )}
-          </header>
+      </header>
+
+      <div className="w-full flex flex-col">
+        {/* Layout para md+ */}
+        <div className="md:grid md:grid-cols-2 hidden">
+          {/* Banner 1 */}
+          <div className="h-[28rem] w-full relative col-span-2">
+            <Image 
+              src="/image/banner1.png" 
+              alt="banner" 
+              fill 
+              priority 
+              className="object-cover object-top"
+            />
+          </div>
+          {/* Banner 2 */}
+          <div className="h-[300px] w-full relative">
+            <Image 
+              src="/image/banner2.png" 
+              alt="banner2" 
+              fill 
+              className="object-cover"
+              priority
+            />
+          </div>
+          {/* Banner 3 */}
+          <div className="h-[300px] w-full relative">
+            <Image 
+              src="/image/banner3.png" 
+              alt="banner3" 
+              fill 
+              className="object-cover"
+              priority
+            />
+          </div>
+        </div>
+
+        {/* Carrossel para sm */}
+        <div className="md:hidden w-full">
+          <Swiper
+            spaceBetween={10}
+            autoplay={{ delay: 15000, disableOnInteraction: false }}
+            modules={[Autoplay]}
+            className="w-full h-[250px]"
+          >
+            <SwiperSlide>
+              <div className="h-[250px] w-full relative">
+                <Image 
+                  src="/image/banner1.png" 
+                  alt="banner1" 
+                  fill 
+                  className="object-cover object-top"
+                  priority
+                />
+              </div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div className="h-[250px] w-full relative">
+                <Image 
+                  src="/image/banner2.png" 
+                  alt="banner2" 
+                  fill 
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div className="h-[250px] w-full relative">
+                <Image 
+                  src="/image/banner3.png" 
+                  alt="banner3" 
+                  fill 
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </SwiperSlide>
+          </Swiper>
+        </div>
+      </div>
 
 
       <div className="flex">
