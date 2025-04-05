@@ -137,23 +137,23 @@ export default function HomePage() {
 
             {/* Dropdown Mobile */}
             {mobileMenuOpen && (
-              <div className="md:hidden mt-4 bg-white dark:bg-gray-800 shadow-lg p-4 absolute left-0 right-0 z-20">
+              <div className={`md:hidden mt-0 shadow-lg p-4 absolute left-0 right-0 z-20 ${darkMode ? "bg-white text-black" : "bg-black text-white"}`}>
                 <button onClick={() => setDarkMode(!darkMode)} className="p-2 flex items-center gap-2">
-                  {darkMode ? <Sun size={24} /> : <Moon size={24} />} <span>Modo Escuro</span>
+                  {darkMode ? <Sun size={24} /> : <Moon size={24} />} <span className={` ${darkMode ? "hidden" : "block"}`}>Modo Escuro</span> <span className={` ${darkMode ? "block" : "hidden"}`}>Modo Claro</span>
                 </button>
                 {session ? (
                   <>
                     {session.user?.is_admin === 1 && (
                       <Link
                         href="/dashboard"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2  hover:bg-gray-100"
                       >
                         Dashboard
                       </Link>
                     )}
                     <Link
                       href="/cart"
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2  hover:bg-gray-100"
                     >
                       Ver Carrinho
                     </Link>
