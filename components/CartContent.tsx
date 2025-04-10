@@ -57,11 +57,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return null;
     }
 
-    // Gerar cartId único
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(7);
     const cartId = `${product.id}-${product.name}-${product.size}-${timestamp}-${random}`;
-    
+
     const newProduct = {
       ...product,
       cartId,
@@ -69,8 +68,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
 
     setCart(prevCart => [...prevCart, newProduct]);
-    
-    // Retorna o cartId do item adicionado
     return cartId;
   };
 
