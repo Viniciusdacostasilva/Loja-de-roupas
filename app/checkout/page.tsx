@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useCart } from "@/components/CartContent";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -31,30 +31,60 @@ interface CheckoutForm {
 export default function CheckoutPage() {
   const { cart: originalCart, clearCart } = useCart();
   const searchParams = useSearchParams();
-  const selectedItemIds = searchParams.get('items')?.split(',') || [];
-  
-  // Filtrar apenas os itens selecionados e inicializar o estado
-  const [checkoutItems, setCheckoutItems] = useState(() => {
-    // Verificar se há itens temporários do checkout direto
-    const tempItems = sessionStorage.getItem('tempCheckoutItems');
-    if (tempItems) {
-      sessionStorage.removeItem('tempCheckoutItems'); // Limpar após usar
-      return JSON.parse(tempItems);
-    }
-    
-    // Se não houver itens temporários, usar os itens selecionados do carrinho
-    return originalCart.filter(item => selectedItemIds.includes(item.cartId));
-  });
+  const selectedItemIds = useMemo(() => 
+    searchParams.get('items')?.split(',') || [], 
+    [searchParams]
+  );
+  const router = useRouter();
 
-  // Calcular o total inicial apenas dos itens selecionados
-  const [checkoutTotal, setCheckoutTotal] = useState<number>(() =>
+  const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
+
+  // Usar useEffect para inicializar os itens
+  useEffect(() => {
+    const initializeCheckoutItems = () => {
+      // Verificar items temporários primeiro
+      const tempItems = sessionStorage.getItem('tempCheckoutItems');
+      if (tempItems) {
+        try {
+          const parsedItems = JSON.parse(tempItems);
+          setCheckoutItems(parsedItems);
+          // Limpar após usar
+          sessionStorage.removeItem('tempCheckoutItems');
+          return;
+        } catch (error) {
+          console.error('Erro ao processar items temporários:', error);
+        }
+      }
+
+      // Se não houver items temporários, usar items do carrinho
+      if (selectedItemIds.length > 0) {
+        const cartItems = originalCart.filter(item => 
+          selectedItemIds.includes(item.cartId)
+        );
+        setCheckoutItems(cartItems);
+      }
+    };
+
+    initializeCheckoutItems();
+  }, [selectedItemIds, originalCart]);
+
+  // Calcular total
+  const [checkoutTotal, setCheckoutTotal] = useState(() => 
     checkoutItems.reduce((sum: number, item: CheckoutItem) => sum + (item.price * item.quantity), 0)
   );
 
-  const [darkMode, setDarkMode] = useState(
+  // Atualizar total quando os itens mudam
+  useEffect(() => {
+    const newTotal: number = checkoutItems.reduce(
+      (sum: number, item: CheckoutItem) => sum + (item.price * item.quantity), 
+      0
+    );
+    setCheckoutTotal(newTotal);
+  }, [checkoutItems]);
+
+  const [darkMode, setDarkMode] = useState<boolean>(
     typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
   );
-  const router = useRouter();
   const [formData, setFormData] = useState<CheckoutForm>({
     name: "",
     email: "",
@@ -96,7 +126,7 @@ export default function CheckoutPage() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  // Nova função para atualizar quantidade no checkout
+  // Função para atualizar quantidade
   const updateCheckoutQuantity = (cartId: string, change: number) => {
     setCheckoutItems((prevItems: CheckoutItem[]) => 
       prevItems.map((item: CheckoutItem) => {
@@ -109,19 +139,10 @@ export default function CheckoutPage() {
     );
   };
 
-  // Nova função para remover item do checkout
+  // Função para remover item
   const removeCheckoutItem = (cartId: string) => {
     setCheckoutItems((prevItems: CheckoutItem[]) => prevItems.filter((item: CheckoutItem) => item.cartId !== cartId));
   };
-
-  // Nova função para calcular o total
-  useEffect(() => {
-    const newTotal: number = checkoutItems.reduce(
-      (sum: number, item: CheckoutItem) => sum + item.price * item.quantity, 
-      0
-    );
-    setCheckoutTotal(newTotal);
-  }, [checkoutItems]);
 
   return (
     <div className={`min-h-screen ${
