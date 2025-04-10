@@ -13,7 +13,7 @@ interface Product {
 
 interface CartContextType {
   cart: Product[];
-  addToCart: (product: Omit<Product, 'cartId'>) => void;
+  addToCart: (product: Omit<Product, 'cartId'>) => string | null;
   removeFromCart: (cartId: string) => void;
   updateQuantity: (cartId: string, change: number) => void;
   clearCart: () => void;
@@ -54,42 +54,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = (product: Omit<Product, 'cartId'>) => {
     if (!product.id) {
       console.error("Produto sem ID válido:", product);
-      return;
+      return null;
     }
 
-    setCart((prevCart) => {
-      // Procura por um produto idêntico (mesmo id, nome e tamanho)
-      const existingProduct = prevCart.find(
-        (item) => 
-          item.id === product.id && 
-          item.name === product.name && 
-          item.size === product.size
-      );
+    // Gerar cartId único
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(7);
+    const cartId = `${product.id}-${product.name}-${product.size}-${timestamp}-${random}`;
+    
+    const newProduct = {
+      ...product,
+      cartId,
+      quantity: 1
+    };
 
-      if (existingProduct) {
-        // Se encontrou um produto idêntico, atualiza apenas a quantidade
-        return prevCart.map((item) =>
-          item.id === product.id && 
-          item.name === product.name && 
-          item.size === product.size
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
-      // Se não encontrou produto idêntico, cria um novo
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(7);
-      const cartId = `${product.id}-${product.name}-${product.size}-${timestamp}-${randomString}`;
-      
-      const newProduct = {
-        ...product,
-        cartId,
-        quantity: 1
-      };
-
-      return [...prevCart, newProduct];
-    });
+    setCart(prevCart => [...prevCart, newProduct]);
+    
+    // Retorna o cartId do item adicionado
+    return cartId;
   };
 
   const removeFromCart = (cartId: string) => {
