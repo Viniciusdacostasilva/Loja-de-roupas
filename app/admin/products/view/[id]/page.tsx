@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Moon, Sun, ChevronDown } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
@@ -14,6 +14,7 @@ interface Product {
   description: string;
   imageUrl: string;
   quantity: number;
+  size?: string; // Added size property
 }
 
 const useTheme = () => {
@@ -39,6 +40,7 @@ const useTheme = () => {
 };
 
 export default function ProductPage() {
+  const router = useRouter();
   const { darkMode, toggleTheme } = useTheme();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,14 +84,45 @@ export default function ProductPage() {
       return;
     }
 
-    addToCart({
+    const newProduct = {
       ...product,
-      id: String(product.id), // Certifique-se de que o ID é uma string
+      id: String(product.id),
       quantity: 1,
       size: selectedSize,
-    });
+    };
+
+    addToCart(newProduct);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    if (!selectedSize) {
+      alert("Por favor, selecione um tamanho antes de continuar.");
+      return;
+    }
+
+    // Criar um ID único para o item
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(7);
+    const cartId = `${product.id}-${product.name}-${product.size}-${timestamp}-${random}`;
+
+    // Criar o produto com cartId
+    const checkoutProduct = {
+      ...product,
+      id: String(product.id),
+      quantity: 1,
+      size: selectedSize,
+      cartId
+    };
+
+    // Redirecionar para o checkout com este item
+    router.push(`/checkout?items=${cartId}`);
+
+    // Armazenar temporariamente o item para o checkout
+    const checkoutItems = JSON.stringify([checkoutProduct]);
+    sessionStorage.setItem('tempCheckoutItems', checkoutItems);
   };
 
   if (loading) return <div>Carregando...</div>;
@@ -198,7 +231,7 @@ export default function ProductPage() {
             <div className="flex gap-4">
               
               <button
-                onClick={handleAddToCart}
+                onClick={handleBuyNow}
                 className={`mt-6 px-4 py-2 w-1/2 font-extrabold rounded ${
                   darkMode ? "bg-light-black text-white" : "bg-light-black text-white shadow-[1px_8px_5px_rgba(0,0,0,0.3)] hover:bg-black"
                 } hover:bg-gray-600`}
