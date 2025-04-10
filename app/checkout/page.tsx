@@ -1,7 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useCart } from "@/components/CartContent";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+interface CheckoutItem {
+  cartId: string;
+  name: string;
+  size: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+}
 import Image from "next/image";
 import Link from "next/link";
 import { Moon, Sun, X } from "lucide-react";
@@ -20,7 +29,28 @@ interface CheckoutForm {
 }
 
 export default function CheckoutPage() {
-  const { cart, total, clearCart, removeFromCart, updateQuantity } = useCart();
+  const { cart: originalCart, clearCart } = useCart();
+  const searchParams = useSearchParams();
+  const selectedItemIds = searchParams.get('items')?.split(',') || [];
+  
+  // Filtrar apenas os itens selecionados e inicializar o estado
+  const [checkoutItems, setCheckoutItems] = useState(() => {
+    // Verificar se há itens temporários do checkout direto
+    const tempItems = sessionStorage.getItem('tempCheckoutItems');
+    if (tempItems) {
+      sessionStorage.removeItem('tempCheckoutItems'); // Limpar após usar
+      return JSON.parse(tempItems);
+    }
+    
+    // Se não houver itens temporários, usar os itens selecionados do carrinho
+    return originalCart.filter(item => selectedItemIds.includes(item.cartId));
+  });
+
+  // Calcular o total inicial apenas dos itens selecionados
+  const [checkoutTotal, setCheckoutTotal] = useState<number>(() =>
+    checkoutItems.reduce((sum: number, item: CheckoutItem) => sum + (item.price * item.quantity), 0)
+  );
+
   const [darkMode, setDarkMode] = useState(
     typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
   );
@@ -65,6 +95,33 @@ export default function CheckoutPage() {
   useEffect(() => {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
+
+  // Nova função para atualizar quantidade no checkout
+  const updateCheckoutQuantity = (cartId: string, change: number) => {
+    setCheckoutItems((prevItems: CheckoutItem[]) => 
+      prevItems.map((item: CheckoutItem) => {
+      if (item.cartId === cartId) {
+        const newQuantity: number = Math.max(1, item.quantity + change);
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+      })
+    );
+  };
+
+  // Nova função para remover item do checkout
+  const removeCheckoutItem = (cartId: string) => {
+    setCheckoutItems((prevItems: CheckoutItem[]) => prevItems.filter((item: CheckoutItem) => item.cartId !== cartId));
+  };
+
+  // Nova função para calcular o total
+  useEffect(() => {
+    const newTotal: number = checkoutItems.reduce(
+      (sum: number, item: CheckoutItem) => sum + item.price * item.quantity, 
+      0
+    );
+    setCheckoutTotal(newTotal);
+  }, [checkoutItems]);
 
   return (
     <div className={`min-h-screen ${
@@ -296,68 +353,68 @@ export default function CheckoutPage() {
           } p-6 rounded-lg shadow-md h-fit`}>
             <h2 className="text-2xl font-bold mb-6">Resumo do Pedido</h2>
             <div className="space-y-4">
-              {cart.map((item) => (
+                {checkoutItems.map((item: CheckoutItem) => (
                 <div key={item.cartId} className="flex gap-4 py-2 border-b relative">
                   <Image
-                    src={item.imageUrl}
-                    alt={item.name}
-                    width={60}
-                    height={60}
-                    className="rounded-md"
+                  src={item.imageUrl}
+                  alt={item.name}
+                  width={60}
+                  height={60}
+                  className="rounded-md"
                   />
                   <div className="flex-1">
-                    <h3 className="font-medium">{item.name}</h3>
-                    <p className={`text-sm ${
-                      darkMode ? "text-gray-300" : "text-gray-500"
-                    }`}>
-                      Tamanho: {item.size}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        onClick={() => updateQuantity(item.cartId, -1)}
-                        className={`px-2 py-1 rounded ${
-                          darkMode 
-                            ? "bg-gray-700 hover:bg-gray-600" 
-                            : "bg-gray-100 hover:bg-gray-200"
-                        }`}
-                        disabled={item.quantity <= 1}
-                      >
-                        -
-                      </button>
-                      <span className="min-w-[20px] text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.cartId, 1)}
-                        className={`px-2 py-1 rounded ${
-                          darkMode 
-                            ? "bg-gray-700 hover:bg-gray-600" 
-                            : "bg-gray-100 hover:bg-gray-200"
-                        }`}
-                      >
-                        +
-                      </button>
-                    </div>
-                    <p className="text-sm font-medium mt-1">
-                      R$ {Number(item.price * item.quantity).toFixed(2)}
-                    </p>
+                  <h3 className="font-medium">{item.name}</h3>
+                  <p className={`text-sm ${
+                    darkMode ? "text-gray-300" : "text-gray-500"
+                  }`}>
+                    Tamanho: {item.size}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <button
+                    onClick={() => updateCheckoutQuantity(item.cartId, -1)}
+                    className={`px-2 py-1 rounded ${
+                      darkMode 
+                      ? "bg-gray-700 hover:bg-gray-600" 
+                      : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                    disabled={item.quantity <= 1}
+                    >
+                    -
+                    </button>
+                    <span className="min-w-[20px] text-center">{item.quantity}</span>
+                    <button
+                    onClick={() => updateCheckoutQuantity(item.cartId, 1)}
+                    className={`px-2 py-1 rounded ${
+                      darkMode 
+                      ? "bg-gray-700 hover:bg-gray-600" 
+                      : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                    >
+                    +
+                    </button>
+                  </div>
+                  <p className="text-sm font-medium mt-1">
+                    R$ {Number(item.price * item.quantity).toFixed(2)}
+                  </p>
                   </div>
                   <button
-                    onClick={() => removeFromCart(item.cartId)}
-                    className={`absolute top-2 right-2 p-1 rounded-full hover:bg-opacity-10 ${
-                      darkMode 
-                        ? "hover:bg-white text-gray-300 hover:text-white" 
-                        : "hover:bg-black text-gray-500 hover:text-black"
-                    }`}
-                    aria-label="Remover item"
+                  onClick={() => removeCheckoutItem(item.cartId)}
+                  className={`absolute top-2 right-2 p-1 rounded-full hover:bg-opacity-10 ${
+                    darkMode 
+                    ? "hover:bg-white text-gray-300 hover:text-white" 
+                    : "hover:bg-black text-gray-500 hover:text-black"
+                  }`}
+                  aria-label="Remover item"
                   >
-                    <X size={18} />
+                  <X size={18} />
                   </button>
                 </div>
-              ))}
+                ))}
 
               <div className="pt-4">
                 <div className="flex justify-between py-2">
                   <span>Subtotal</span>
-                  <span>R$ {Number(total).toFixed(2)}</span>
+                  <span>R$ {Number(checkoutTotal).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between py-2">
                   <span>Frete</span>
@@ -365,7 +422,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between py-2 font-bold">
                   <span>Total</span>
-                  <span>R$ {Number(total).toFixed(2)}</span>
+                  <span>R$ {Number(checkoutTotal).toFixed(2)}</span>
                 </div>
               </div>
             </div>
