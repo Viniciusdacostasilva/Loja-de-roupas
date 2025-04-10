@@ -9,7 +9,7 @@ export function CartItems() {
   const [darkMode, setDarkMode] = useState(
     typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
   );
-  const { cart, removeFromCart, total, updateQuantity } = useCart();
+  const { cart, removeFromCart, total, updateQuantity, totalItems } = useCart();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -96,9 +96,9 @@ export function CartItems() {
               ))
             )}
 
-            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-6 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl sm:mt-8 md:mt-0">
+            <div className="flex justify-between items-center pl-10 pr-10 p-8 sm:w-full sm:flex-wrap sm:gap-y-3 shadow-[1px_8px_5px_rgba(0,0,0,0.3)] h-fit rounded rounded-b-3xl sm:mt-8 md:mt-0">
               <div>
-                <div>Produtos: {cart.length}</div>
+                <div>Produtos: {totalItems}</div>
                 <div>Valor: R$ {Number(total).toFixed(2)}</div>
               </div>
               <div className="flex flex-col sm:w-full sm:gap-y-4 md:gap-y-0 md:w-fit">
@@ -112,7 +112,7 @@ export function CartItems() {
                       : "hover:bg-black hover:text-white"
                   }`}
                 >
-                  <Link href="#">COMPRAR</Link>
+                  <Link href="/checkout">COMPRAR</Link>
                 </button>
               </div>
             </div>
