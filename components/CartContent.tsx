@@ -18,6 +18,7 @@ interface CartContextType {
   updateQuantity: (cartId: string, change: number) => void;
   clearCart: () => void;
   total: number;
+  totalItems: number; // Adicione esta linha
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -57,9 +58,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     setCart((prevCart) => {
+      // Procura por um produto idêntico (mesmo id, nome e tamanho)
+      const existingProduct = prevCart.find(
+        (item) => 
+          item.id === product.id && 
+          item.name === product.name && 
+          item.size === product.size
+      );
+
+      if (existingProduct) {
+        // Se encontrou um produto idêntico, atualiza apenas a quantidade
+        return prevCart.map((item) =>
+          item.id === product.id && 
+          item.name === product.name && 
+          item.size === product.size
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      // Se não encontrou produto idêntico, cria um novo
       const timestamp = Date.now();
       const randomString = Math.random().toString(36).substring(7);
-      const cartId = `${product.id}-${product.size}-${timestamp}-${randomString}`;
+      const cartId = `${product.id}-${product.name}-${product.size}-${timestamp}-${randomString}`;
       
       const newProduct = {
         ...product,
@@ -94,6 +115,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Modifique a forma como calculamos o total de itens
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
   // Não renderiza nada até que estejamos no cliente
   if (!isClient) {
     return null;
@@ -107,7 +133,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeFromCart, 
         updateQuantity, 
         clearCart, 
-        total 
+        total,
+        totalItems: getTotalItems() // Adicione esta linha
       }}
     >
       {children}
