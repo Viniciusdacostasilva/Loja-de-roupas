@@ -10,6 +10,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import { Autoplay } from 'swiper/modules';
+import { useRouter } from 'next/navigation';
 
 interface Product {
   id: string;
@@ -33,6 +34,8 @@ export default function HomePage() {
   const { data: session } = useSession();
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -69,6 +72,13 @@ export default function HomePage() {
     ? products
     : products.filter(product => product.category === selectedCategory);
 
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
+
   return (
     <div className={`${darkMode ? "dark bg-background-black text-white" : "bg-white text-black"} min-h-screen transition-all`}>
 
@@ -80,6 +90,19 @@ export default function HomePage() {
 
               {/* Menu Desktop */}
               <div className="hidden md:flex items-center gap-4 relative">
+                <form onSubmit={handleSearch} className="relative">
+                  <input
+                    type="text"
+                    placeholder="Pesquisar produtos..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={`px-4 py-2 rounded-lg w-64 focus:outline-none ${
+                      darkMode 
+                        ? "bg-light-black text-white border border-gray-600" 
+                        : "bg-gray-100 text-black"
+                    }`}
+                  />
+                </form>
                 {session ? (
                   <div className="relative">
                     <button
@@ -129,6 +152,19 @@ export default function HomePage() {
 
               {/* Menu Mobile */}
               <div className="md:hidden flex items-center">
+                <form onSubmit={handleSearch} className="relative">
+                  <input
+                    type="text"
+                    placeholder="Pesquisar..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={`px-3 py-1 rounded-lg mr-2 w-32 focus:outline-none ${
+                      darkMode 
+                        ? "bg-light-black text-white border border-gray-600" 
+                        : "bg-gray-100 text-black"
+                    }`}
+                  />
+                </form>
                 <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2">
                   {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
