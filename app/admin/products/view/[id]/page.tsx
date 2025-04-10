@@ -103,26 +103,39 @@ export default function ProductPage() {
       return;
     }
 
-    // Criar um ID único para o item
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(7);
-    const cartId = `${product.id}-${product.name}-${product.size}-${timestamp}-${random}`;
+    try {
+      // Criar produto para checkout direto
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(7);
+      const cartId = `${product.id}-${selectedSize}-${timestamp}-${random}`;
 
-    // Criar o produto com cartId
-    const checkoutProduct = {
-      ...product,
-      id: String(product.id),
-      quantity: 1,
-      size: selectedSize,
-      cartId
-    };
+      const checkoutProduct = {
+        ...product,
+        id: String(product.id),
+        quantity: 1,
+        size: selectedSize,
+        cartId
+      };
 
-    // Redirecionar para o checkout com este item
-    router.push(`/checkout?items=${cartId}`);
+      // Garantir que o sessionStorage seja limpo antes de adicionar novo item
+      sessionStorage.removeItem('tempCheckoutItems');
+      
+      // Adicionar novo item
+      sessionStorage.setItem('tempCheckoutItems', JSON.stringify([checkoutProduct]));
 
-    // Armazenar temporariamente o item para o checkout
-    const checkoutItems = JSON.stringify([checkoutProduct]);
-    sessionStorage.setItem('tempCheckoutItems', checkoutItems);
+      // Verificar se o item foi salvo corretamente
+      const savedItems = sessionStorage.getItem('tempCheckoutItems');
+      if (!savedItems) {
+        throw new Error('Falha ao salvar item para checkout');
+      }
+
+      // Redirecionar apenas se o item foi salvo com sucesso
+      router.push('/checkout');
+
+    } catch (error) {
+      console.error("Erro ao processar compra:", error);
+      alert("Ocorreu um erro ao processar sua compra. Por favor, tente novamente.");
+    }
   };
 
   if (loading) return <div>Carregando...</div>;
