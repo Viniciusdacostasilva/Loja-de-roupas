@@ -39,7 +39,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchTerm,] = useState("");
   const { data: session } = useSession();
   const user = session?.user
     ? {
