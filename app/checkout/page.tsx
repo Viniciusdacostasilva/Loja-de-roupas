@@ -13,8 +13,7 @@ interface CheckoutItem {
   imageUrl: string;
 }
 import Image from "next/image";
-import Link from "next/link";
-import { Moon, Sun, X } from "lucide-react";
+import {  X } from "lucide-react";
 import Header from "@/components/Header";
 
 interface CheckoutForm {
