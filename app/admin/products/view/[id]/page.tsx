@@ -245,9 +245,9 @@ export default function ProductPage() {
               
               <button
                 onClick={handleBuyNow}
-                className={`mt-6 px-4 py-2 w-1/2 font-extrabold rounded ${
-                  darkMode ? "bg-light-black text-white" : "bg-light-black text-white shadow-[1px_8px_5px_rgba(0,0,0,0.3)] hover:bg-black"
-                } hover:bg-gray-600`}
+                className={`mt-6 px-4 py-2 w-1/2 font-extrabold rounded hover:bg-white-buttons hover:text-black ${
+                  darkMode ? "bg-light-black text-white " : "bg-black text-white shadow-[1px_8px_5px_rgba(0,0,0,0.3)] hover:bg-black"
+                }`}
               > COMPRAR
               </button>
               <button

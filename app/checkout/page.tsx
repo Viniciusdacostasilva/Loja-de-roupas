@@ -381,8 +381,8 @@ export default function CheckoutPage() {
                 type="submit"
                 className={`w-full py-3 px-4 rounded-md transition-colors ${
                   darkMode
-                    ? "bg-white text-black hover:bg-gray-200"
-                    : "bg-black text-white hover:bg-gray-800"
+                    ? "bg-white text-black hover:bg-black hover:text-white"
+                    : "bg-black text-white hover:bg-white-buttons hover:text-black hover:shadow-sm"
                 }`}
               >
                 Finalizar Compra
@@ -401,8 +401,8 @@ export default function CheckoutPage() {
                   <Image
                   src={item.imageUrl}
                   alt={item.name}
-                  width={60}
-                  height={60}
+                  width={100}
+                  height={100}
                   className="rounded-md"
                   />
                   <div className="flex-1">
@@ -417,7 +417,7 @@ export default function CheckoutPage() {
                     onClick={() => updateCheckoutQuantity(item.cartId, -1)}
                     className={`px-2 py-1 rounded ${
                       darkMode 
-                      ? "bg-gray-700 hover:bg-gray-600" 
+                      ? "bg-black hover:bg-white hover:text-light-black" 
                       : "bg-gray-100 hover:bg-gray-200"
                     }`}
                     disabled={item.quantity <= 1}
@@ -429,7 +429,7 @@ export default function CheckoutPage() {
                     onClick={() => updateCheckoutQuantity(item.cartId, 1)}
                     className={`px-2 py-1 rounded ${
                       darkMode 
-                      ? "bg-gray-700 hover:bg-gray-600" 
+                      ? "bg-black hover:bg-white hover:text-light-black" 
                       : "bg-gray-100 hover:bg-gray-200"
                     }`}
                     >
