@@ -9,9 +9,9 @@ interface HeaderProps {
   setMenuOpen: (value: boolean) => void;
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (value: boolean) => void;
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
-  onSearch: (event: FormEvent<HTMLFormElement>) => void; // Adicionado
+  searchTerm?: string; // Tornado opcional
+  setSearchTerm?: (value: string) => void; // Tornado opcional
+  onSearch?: (event: FormEvent<HTMLFormElement>) => void; // Tornado opcional
   user?: {
     name: string;
     isAdmin?: boolean;
@@ -28,37 +28,43 @@ const Header: React.FC<HeaderProps> = ({
   setMobileMenuOpen,
   searchTerm,
   setSearchTerm,
-  onSearch, // Adicionado
+  onSearch,
   user,
   onLogout,
 }) => {
   return (
     <header className="w-full h-16 p-4">
       <div className="flex justify-between items-center h-full max-w-6xl mx-auto">
+        {/* Logo */}
         <Link href="/" className="text-3xl font-bold">
           Store
         </Link>
 
         {/* Menu Desktop */}
         <div className="hidden md:flex items-center gap-4 relative">
-          <form onSubmit={onSearch} className="relative">
-            <input
-              type="text"
-              placeholder="Pesquisar produtos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`px-4 py-2 rounded-lg w-64 focus:outline-none ${
-                darkMode
-                  ? "bg-light-black text-white border border-gray-600"
-                  : "bg-gray-100 text-black"
-              }`}
-            />
-          </form>
+          {/* Seção de Busca (Opcional) */}
+          {onSearch && setSearchTerm && searchTerm !== undefined && (
+            <form onSubmit={onSearch} className="relative">
+              <input
+                type="text"
+                placeholder="Pesquisar produtos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={`px-4 py-2 rounded-lg w-64 focus:outline-none ${
+                  darkMode
+                    ? "bg-light-black text-white border border-gray-600"
+                    : "bg-gray-100 text-black"
+                }`}
+              />
+            </form>
+          )}
+
+          {/* Opções de Usuário */}
           {user ? (
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className={`px-4 py-2 bg-light-black hover:bg-black text-white rounded flex items-center gap-2`}
+                className="px-4 py-2 bg-light-black hover:bg-black text-white rounded flex items-center gap-2"
               >
                 {user.name} <ChevronDown size={18} />
               </button>
@@ -104,19 +110,22 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Menu Mobile */}
         <div className="md:hidden flex items-center">
-          <form onSubmit={onSearch} className="relative">
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`px-3 py-1 rounded-lg mr-2 w-32 focus:outline-none ${
-                darkMode
-                  ? "bg-light-black text-white border border-gray-600"
-                  : "bg-gray-100 text-black"
-              }`}
-            />
-          </form>
+          {/* Seção de Busca (Opcional) */}
+          {onSearch && setSearchTerm && searchTerm !== undefined && (
+            <form onSubmit={onSearch} className="relative">
+              <input
+                type="text"
+                placeholder="Pesquisar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={`px-3 py-1 rounded-lg mr-2 w-32 focus:outline-none ${
+                  darkMode
+                    ? "bg-light-black text-white border border-gray-600"
+                    : "bg-gray-100 text-black"
+                }`}
+              />
+            </form>
+          )}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2"

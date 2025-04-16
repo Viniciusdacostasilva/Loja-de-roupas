@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useCart } from "@/components/CartContent";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 interface CheckoutItem {
   cartId: string;
@@ -14,6 +15,7 @@ interface CheckoutItem {
 import Image from "next/image";
 import Link from "next/link";
 import { Moon, Sun, X } from "lucide-react";
+import Header from "@/components/Header";
 
 interface CheckoutForm {
   name: string;
@@ -36,6 +38,19 @@ export default function CheckoutPage() {
     [searchParams]
   );
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: session } = useSession();
+  const user = session?.user
+    ? {
+        name: session.user.name || "Usuário",
+        isAdmin: session.user.is_admin === 1,
+      }
+    : null;
+    const handleLogout = () => {
+      signOut();
+    };
 
   const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
 
@@ -144,28 +159,35 @@ export default function CheckoutPage() {
     setCheckoutItems((prevItems: CheckoutItem[]) => prevItems.filter((item: CheckoutItem) => item.cartId !== cartId));
   };
 
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
+
+
   return (
     <div className={`min-h-screen ${
-      darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+      darkMode ? "bg-light-black text-white" : "bg-gray-50 text-black"
     }`}>
-      <header className={`${
-        darkMode ? "bg-gray-800" : "bg-white"
-      } shadow-sm`}>
-        <div className="max-w-7xl mx-auto py-4 px-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold">
-            Store
-          </Link>
-          <button onClick={() => setDarkMode(!darkMode)} className="p-2">
-            {darkMode ? <Sun size={24} /> : <Moon size={24} />}
-          </button>
-        </div>
-      </header>
+      
+      <Header
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
+      menuOpen={menuOpen}
+      setMenuOpen={setMenuOpen}
+      mobileMenuOpen={mobileMenuOpen}
+      setMobileMenuOpen={setMobileMenuOpen}
+      user={user}
+      onLogout={handleLogout}
+    />
 
       <main className="max-w-7xl mx-auto py-8 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Formulário de Checkout */}
           <div className={`${
-            darkMode ? "bg-gray-800" : "bg-white"
+            darkMode ? "bg-background-black" : "bg-white"
           } p-6 rounded-lg shadow-md`}>
             <h2 className="text-2xl font-bold mb-6">Informações de Entrega</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -179,7 +201,7 @@ export default function CheckoutPage() {
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                     darkMode 
-                      ? "bg-gray-700 border-gray-600 text-white" 
+                      ? "bg-link-gray border-gray-600 text-white" 
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.name}
@@ -197,7 +219,7 @@ export default function CheckoutPage() {
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                     darkMode 
-                      ? "bg-gray-700 border-gray-600 text-white" 
+                      ? "bg-link-gray border-gray-600 text-white" 
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.email}
@@ -215,7 +237,7 @@ export default function CheckoutPage() {
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                     darkMode 
-                      ? "bg-gray-700 border-gray-600 text-white" 
+                      ? "bg-link-gray border-gray-600 text-white" 
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.address}
@@ -234,7 +256,7 @@ export default function CheckoutPage() {
                     required
                     className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                       darkMode 
-                        ? "bg-gray-700 border-gray-600 text-white" 
+                        ? "bg-link-gray border-gray-600 text-white" 
                         : "bg-white border-gray-300 text-gray-900"
                     }`}
                     value={formData.city}
@@ -251,7 +273,7 @@ export default function CheckoutPage() {
                     required
                     className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                       darkMode 
-                        ? "bg-gray-700 border-gray-600 text-white" 
+                        ? "bg-link-gray border-gray-600 text-white" 
                         : "bg-white border-gray-300 text-gray-900"
                     }`}
                     value={formData.state}
@@ -270,7 +292,7 @@ export default function CheckoutPage() {
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                     darkMode 
-                      ? "bg-gray-700 border-gray-600 text-white" 
+                      ? "bg-link-gray border-gray-600 text-white" 
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.zipCode}
@@ -286,8 +308,8 @@ export default function CheckoutPage() {
                   name="paymentMethod"
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                     darkMode 
-                      ? "bg-gray-700 border-gray-600 text-white" 
-                      : "bg-white border-gray-300 text-gray-900"
+                      ? "bg-link-gray border-gray-600 text-white" 
+                      : " border-gray-300 text-gray-900"
                   }`}
                   value={formData.paymentMethod}
                   onChange={handleInputChange}
@@ -309,8 +331,8 @@ export default function CheckoutPage() {
                       name="cardNumber"
                       className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                         darkMode 
-                          ? "bg-gray-700 border-gray-600 text-white" 
-                          : "bg-white border-gray-300 text-gray-900"
+                          ? "bg-link-gray border-gray-600 text-white" 
+                          : " border-gray-300 text-gray-900"
                       }`}
                       value={formData.cardNumber}
                       onChange={handleInputChange}
@@ -327,8 +349,8 @@ export default function CheckoutPage() {
                         placeholder="MM/AA"
                         className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                           darkMode 
-                            ? "bg-gray-700 border-gray-600 text-white" 
-                            : "bg-white border-gray-300 text-gray-900"
+                            ? "bg-link-gray border-gray-600 text-white" 
+                            : " border-gray-300 text-gray-900"
                         }`}
                         value={formData.cardExpiry}
                         onChange={handleInputChange}
@@ -344,8 +366,8 @@ export default function CheckoutPage() {
                         maxLength={3}
                         className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
                           darkMode 
-                            ? "bg-gray-700 border-gray-600 text-white" 
-                            : "bg-white border-gray-300 text-gray-900"
+                            ? "bg-link-gray border-gray-600 text-white" 
+                            : " border-gray-300 text-gray-900"
                         }`}
                         value={formData.cardCVV}
                         onChange={handleInputChange}
@@ -370,7 +392,7 @@ export default function CheckoutPage() {
 
           {/* Resumo do Pedido */}
           <div className={`${
-            darkMode ? "bg-gray-800" : "bg-white"
+            darkMode ? "bg-background-black" : "bg-white"
           } p-6 rounded-lg shadow-md h-fit`}>
             <h2 className="text-2xl font-bold mb-6">Resumo do Pedido</h2>
             <div className="space-y-4">
