@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import Link from "next/link";
-import { Moon, Sun, ChevronDown, X, Menu } from "lucide-react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -45,10 +43,10 @@ export default function HomePage() {
       isAdmin: session.user.is_admin === 1,
     }
   : null;
-
   const handleLogout = () => {
     signOut();
   };
+
 
   useEffect(() => {
     if (typeof window !== "undefined") {
