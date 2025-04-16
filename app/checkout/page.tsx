@@ -39,7 +39,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm,] = useState("");
   const { data: session } = useSession();
   const user = session?.user
     ? {
@@ -158,12 +158,6 @@ export default function CheckoutPage() {
     setCheckoutItems((prevItems: CheckoutItem[]) => prevItems.filter((item: CheckoutItem) => item.cartId !== cartId));
   };
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
-    }
-  };
 
 
   return (
