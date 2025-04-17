@@ -12,7 +12,7 @@ interface CategoriesSidebarProps {
     darkMode,
   }) => {
     return (
-      <aside className="min-w-64 p-6 border-r border-gray-300 dark:border-black md:block">
+      <aside className="min-w-64 p-6  md:border-r border-gray-300 dark:border-black md:block">
         <h3
           className={`text-xl font-bold mb-4 ${
             darkMode ? "text-white" : "text-black"
