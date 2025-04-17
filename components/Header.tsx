@@ -110,22 +110,6 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Menu Mobile */}
         <div className="md:hidden flex items-center">
-          {/* Seção de Busca (Opcional) */}
-          {onSearch && setSearchTerm && searchTerm !== undefined && (
-            <form onSubmit={onSearch} className="relative">
-              <input
-                type="text"
-                placeholder="Pesquisar..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={`px-3 py-1 rounded-lg mr-2 w-32 focus:outline-none ${
-                  darkMode
-                    ? "bg-light-black text-white border border-gray-600"
-                    : "bg-gray-100 text-black"
-                }`}
-              />
-            </form>
-          )}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2"
@@ -134,6 +118,51 @@ const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Dropdown Mobile */}
+      {mobileMenuOpen && (
+        <div
+          className={`md:hidden mt-0 shadow-lg p-4 absolute left-0 right-0 z-20 ${
+            darkMode ? "bg-background-black text-white" : "bg-white text-black"
+          }`}
+        >
+          <nav className="flex flex-col gap-4">
+            {user ? (
+              <>
+                {user.isAdmin && (
+                  <Link
+                    href="/dashboard"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                )}
+                <Link
+                  href="/cart"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                >
+                  Ver Carrinho
+                </Link>
+                {onLogout && (
+                  <button
+                    onClick={onLogout}
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                  >
+                    Sair
+                  </button>
+                )}
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="block px-4 py-2 rounded hover:bg-gray-600 bg-black text-white text-center"
+              >
+                Login
+              </Link>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
