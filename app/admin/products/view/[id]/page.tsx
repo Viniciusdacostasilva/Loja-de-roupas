@@ -227,7 +227,7 @@ export default function ProductPage() {
                   className={`px-3 py-1 border rounded ${
                     selectedSize === size && darkMode
                       ? "bg-white text-black"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                      : "hover:bg-gray-200 dark:hover:bg-gray-100"
                   }
                     ${selectedSize === size && !darkMode 
                       ? "bg-black text-white": "hover:bg-gray-200"
@@ -254,7 +254,7 @@ export default function ProductPage() {
                 onClick={handleAddToCart}
                 className={`mt-6 px-4 py-2 sm:w-1/2 md:w-1/3 font-extrabold  rounded shadow-[1px_8px_5px_rgba(0,0,0,0.3)] ${
                   darkMode ? "text-white  " :  "text-black"
-                } hover:bg-gray-600`}
+                } hover:bg-gray-100 hover:text-black`}
               >
                 {added ? "ADICIONADO!" : "+CARRINHO"}
               </button>
