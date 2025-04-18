@@ -161,7 +161,7 @@ export default function CheckoutPage() {
 
   return (
     <div className={`min-h-screen ${
-      darkMode ? "bg-light-black text-white" : "bg-gray-50 text-black"
+      darkMode ? "bg-background-black text-white" : "bg-gray-50 text-black"
     }`}>
       
       <Header
@@ -179,7 +179,7 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Formulário de Checkout */}
           <div className={`${
-            darkMode ? "bg-background-black" : "bg-white"
+            darkMode ? "bg-black" : "bg-white"
           } p-6 rounded-lg shadow-md`}>
             <h2 className="text-2xl font-bold mb-6">Informações de Entrega</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -333,7 +333,7 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-200" : "text-gray-700"
+                        darkMode ? "text-white" : "text-gray-700"
                       }`}>Validade</label>
                       <input
                         type="text"
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                 type="submit"
                 className={`w-full py-3 px-4 rounded-md transition-colors ${
                   darkMode
-                    ? "bg-white text-black hover:bg-black hover:text-white"
+                    ? "bg-white text-black hover:bg-background-black hover:text-white"
                     : "bg-black text-white hover:bg-white-buttons hover:text-black hover:shadow-sm"
                 }`}
               >
@@ -384,7 +384,7 @@ export default function CheckoutPage() {
 
           {/* Resumo do Pedido */}
           <div className={`${
-            darkMode ? "bg-background-black" : "bg-white"
+            darkMode ? "bg-black" : "bg-white"
           } p-6 rounded-lg shadow-md h-fit`}>
             <h2 className="text-2xl font-bold mb-6">Resumo do Pedido</h2>
             <div className="space-y-4">

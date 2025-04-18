@@ -9,9 +9,9 @@ interface HeaderProps {
   setMenuOpen: (value: boolean) => void;
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (value: boolean) => void;
-  searchTerm?: string; // Tornado opcional
-  setSearchTerm?: (value: string) => void; // Tornado opcional
-  onSearch?: (event: FormEvent<HTMLFormElement>) => void; // Tornado opcional
+  searchTerm?: string; 
+  setSearchTerm?: (value: string) => void; 
+  onSearch?: (event: FormEvent<HTMLFormElement>) => void; 
   user?: {
     name: string;
     isAdmin?: boolean;
@@ -64,7 +64,7 @@ const Header: React.FC<HeaderProps> = ({
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="px-4 py-2 bg-light-black hover:bg-black text-white rounded flex items-center gap-2"
+                className={`px-4 py-2  ${ darkMode ? "bg-white text-black" : "bg-light-black text-white"} rounded flex items-center gap-2  hover:bg-black hover:text-white`}
               >
                 {user.name} <ChevronDown size={18} />
               </button>
