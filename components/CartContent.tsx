@@ -1,5 +1,8 @@
 "use client";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useSession } from "next-auth/react";
+import { db } from "@/lib/firebaseConfig";
+import { doc, setDoc, getDoc, collection } from "firebase/firestore";
 
 interface Product {
   id: string;
@@ -18,7 +21,8 @@ interface CartContextType {
   updateQuantity: (cartId: string, change: number) => void;
   clearCart: () => void;
   total: number;
-  totalItems: number; // Adicione esta linha
+  totalItems: number;
+  loading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -26,30 +30,66 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<Product[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
 
-  // Inicialização do carrinho
+  // Função para carregar o carrinho do usuário
+  const loadUserCart = async (userId: string) => {
+    try {
+      setLoading(true);
+      const cartDocRef = doc(db, "cart", `user_${userId}`);
+      const cartDoc = await getDoc(cartDocRef);
+      if (cartDoc.exists()) {
+        const cartData = cartDoc.data();
+        setCart(cartData.items || []);
+      } else {
+        setCart([]);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar carrinho:", error);
+      setCart([]);
+    } finally {
+      setLoading(false);
+    }
+    
+  };
+
+  // Função para salvar o carrinho do usuário
+  const saveUserCart = async (userId: string, cartItems: Product[]) => {
+    try {
+      setLoading(true);
+      const cartDocRef = doc(db, "cart", `user_${userId}`);
+      const cartData = {
+        userId: userId,
+        email: session?.user?.email,
+        items: cartItems,
+        updatedAt: new Date().toISOString()
+      };
+      
+      await setDoc(cartDocRef, cartData);
+    } catch (error) {
+      console.error("Erro ao salvar carrinho:", error);
+    } finally { 
+      setLoading(false);
+    }
+  };
+
+  // Carregar carrinho quando usuário fizer login
   useEffect(() => {
     setIsClient(true);
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      try {
-        setCart(JSON.parse(storedCart));
-      } catch (error) {
-        console.error("Erro ao carregar o carrinho:", error);
-      }
+    if (session?.user?.id) {
+      loadUserCart(session.user.id);
     }
-  }, []);
+    // Remove any cart clearing logic here
+  }, [session?.user?.id]);
 
-  // Atualização do localStorage
+  // Salvar carrinho quando houver mudanças
   useEffect(() => {
-    if (isClient) {
-      if (cart.length > 0) {
-        localStorage.setItem("cart", JSON.stringify(cart));
-      } else {
-        localStorage.removeItem("cart");
-      }
+    if (isClient && session?.user?.id && (cart.length > 0)) {
+      saveUserCart(session.user.id, cart);
     }
-  }, [cart, isClient]);
+    // Remove any cart clearing logic here
+  }, [cart, session?.user?.id]);
 
   const addToCart = (product: Omit<Product, 'cartId'>) => {
     if (!product.id) {
@@ -85,21 +125,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const clearCart = () => {
-    setCart([]);
-    if (isClient) {
-      localStorage.removeItem("cart");
+  const clearCart = async () => {
+    if (session?.user?.id) {
+      try {
+        setLoading(true);
+        // Check if the cart document exists first
+        const cartDocRef = doc(db, "cart", `user_${session.user.id}`);
+        const cartDoc = await getDoc(cartDocRef);
+        
+        if (cartDoc.exists()) {
+          const cartData = cartDoc.data();
+          // Only clear if it belongs to the current user
+          if (cartData.userId === session.user.id) {
+            await saveUserCart(session.user.id, []);
+            setCart([]);
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao limpar carrinho:", error);
+      } finally { 
+        setLoading(false);
+      }
     }
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Modifique a forma como calculamos o total de itens
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Não renderiza nada até que estejamos no cliente
   if (!isClient) {
     return null;
   }
@@ -113,7 +168,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity, 
         clearCart, 
         total,
-        totalItems: getTotalItems() // Adicione esta linha
+        totalItems: getTotalItems(),
+        loading
       }}
     >
       {children}
