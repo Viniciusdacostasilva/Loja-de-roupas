@@ -78,12 +78,12 @@ const Header: React.FC<HeaderProps> = ({
                       Dashboard
                     </Link>
                   )}
-                  <Link
+                  <a
                     href="/cart"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Ver Carrinho
-                  </Link>
+                  </a>
                   {onLogout && (
                     <button
                       onClick={onLogout}
@@ -137,12 +137,12 @@ const Header: React.FC<HeaderProps> = ({
                     Dashboard
                   </Link>
                 )}
-                <Link
+                <a
                   href="/cart"
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Ver Carrinho
-                </Link>
+                </a>
                 {onLogout && (
                   <button
                     onClick={onLogout}
