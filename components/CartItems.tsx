@@ -9,7 +9,7 @@ export function CartItems() {
   const [darkMode, setDarkMode] = useState(
     typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
   );
-  const { cart, removeFromCart, total, updateQuantity, totalItems } = useCart();
+  const { cart, removeFromCart, total, updateQuantity, totalItems, loading } = useCart();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   
   // Calculate totals for selected items
@@ -69,8 +69,13 @@ export function CartItems() {
 
       <div className="sm:flex sm:flex-col lg:justify-center lg:flex-row min-h-screen">
         <div className="sm:w-full sm:pr-2 sm:pl-2 md:w-full lg:pr-6 lg:pl-6 flex md:justify-center gap-6">
-          <div className="sm:w-full md:max-w-4xl pt-6">
-            {cart.length === 0 ? (
+          <div className="sm:w-full md:max-w-4xl pt-6"> 
+            {loading && (
+              <div className="flex justify-center items-center h-full w-full">
+                <div className={`animate-spin rounded-full h-32 w-32 border-b-2 ${darkMode ? "border-gray-100" : "border-gray-900"}`}></div>
+              </div>
+            )}
+            {cart.length === 0 && !loading ? (
               <p>Seu carrinho está vazio.</p>
             ) : (
               <>
