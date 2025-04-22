@@ -1,8 +1,8 @@
 "use client";
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { db } from "@/lib/firebaseConfig";
-import { doc, setDoc, getDoc, collection } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore"; // Removed unused 'collection' import
 
 interface Product {
   id: string;
@@ -34,7 +34,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   // Função para carregar o carrinho do usuário
-  const loadUserCart = async (userId: string) => {
+  const loadUserCart = useCallback(async (userId: string) => {
     try {
       setLoading(true);
       const cartDocRef = doc(db, "cart", `user_${userId}`);
@@ -52,10 +52,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
     
-  };
+  }, []);
 
   // Função para salvar o carrinho do usuário
-  const saveUserCart = async (userId: string, cartItems: Product[]) => {
+  const saveUserCart = useCallback(async (userId: string, cartItems: Product[]) => {
     try {
       setLoading(true);
       const cartDocRef = doc(db, "cart", `user_${userId}`);
@@ -72,7 +72,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally { 
       setLoading(false);
     }
-  };
+  }, [session?.user?.email]); // Add session?.user?.email as dependency since it's used inside
 
   // Carregar carrinho quando usuário fizer login
   useEffect(() => {
@@ -80,16 +80,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (session?.user?.id) {
       loadUserCart(session.user.id);
     }
-    // Remove any cart clearing logic here
-  }, [session?.user?.id]);
+  }, [session?.user?.id, loadUserCart]); // Added loadUserCart dependency
 
   // Salvar carrinho quando houver mudanças
   useEffect(() => {
     if (isClient && session?.user?.id && (cart.length > 0)) {
       saveUserCart(session.user.id, cart);
     }
-    // Remove any cart clearing logic here
-  }, [cart, session?.user?.id]);
+  }, [cart, session?.user?.id, isClient, saveUserCart]); // Added all required dependencies
 
   const addToCart = (product: Omit<Product, 'cartId'>) => {
     if (!product.id) {
@@ -184,3 +182,4 @@ export function useCart() {
   }
   return context;
 }
+
