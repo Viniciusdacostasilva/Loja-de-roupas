@@ -59,6 +59,10 @@ export default function Dashboard() {
     fetchProducts();
   }, [session]);
 
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
+  };
+
   if (!session || !session.user || session.user.is_admin !== 1) {
     return (
       <div className="text-center text-red-500">
@@ -106,7 +110,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-4">
             {session ? (
-              <button onClick={() => signOut({ callbackUrl: "/" })} className={`px-4 py-2 rounded ${darkMode ? "hover:bg-white hover:text-black bg-light-black" : "hover:bg-background-black hover:text-white bg-light-black"}`}>
+              <button onClick={handleLogout} className={`px-4 py-2 rounded ${darkMode ? "hover:bg-white hover:text-black bg-light-black" : "hover:bg-background-black hover:text-white bg-light-black"}`}>
                 Sair
               </button>
             ) : (
@@ -167,4 +171,4 @@ export default function Dashboard() {
       </main>
     </div>
   );
-} 
+}
