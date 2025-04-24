@@ -85,12 +85,16 @@ const Header: React.FC<HeaderProps> = ({
                     Ver Carrinho
                   </a>
                   {onLogout && (
-                    <button
-                      onClick={onLogout}
+                    <Link
+                      href="/"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onLogout();
+                      }}
                       className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                     >
                       Sair
-                    </button>
+                    </Link>
                   )}
                 </div>
               )}
@@ -144,12 +148,16 @@ const Header: React.FC<HeaderProps> = ({
                   Ver Carrinho
                 </a>
                 {onLogout && (
-                  <button
-                    onClick={onLogout}
+                  <Link
+                    href="/"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onLogout();
+                    }}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     Sair
-                  </button>
+                  </Link>
                 )}
               </>
             ) : (
