@@ -43,10 +43,9 @@ export default function HomePage() {
       isAdmin: session.user.is_admin === 1,
     }
   : null;
-  const handleLogout = () => {
-    signOut();
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
   };
-
 
   useEffect(() => {
     if (typeof window !== "undefined") {
