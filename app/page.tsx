@@ -35,7 +35,18 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
-
+<<<<<<< HEAD
+=======
+  const user = session?.user
+  ? {
+      name: session.user.name || "Usuário",
+      isAdmin: session.user.is_admin === 1,
+    }
+  : null;
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
+  };
+>>>>>>> 7bc67c2f34ab4dca9ff07dad0e14aada2e59a03d
 
   useEffect(() => {
     if (typeof window !== "undefined") {

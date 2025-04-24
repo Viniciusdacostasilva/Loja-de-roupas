@@ -74,7 +74,23 @@ const authOptions: NextAuthOptions = {
       }
       return session; // Retorna a sessão atualizada
     },
+    async redirect({ url, baseUrl }) {
+      // Se a URL começar com '/', adicionar o baseUrl
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      } else if (url.startsWith("http")) {
+        // Se for uma URL completa, verificar se é do mesmo domínio
+        const urlObj = new URL(url);
+        const baseUrlObj = new URL(baseUrl);
+        if (urlObj.origin === baseUrlObj.origin) {
+          return url;
+        }
+      }
+      // Se não for nenhum dos casos acima, redirecionar para a página inicial
+      return baseUrl;
+    }
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);

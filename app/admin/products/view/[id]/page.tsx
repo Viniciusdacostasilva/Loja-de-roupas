@@ -173,12 +173,12 @@ export default function ProductPage() {
                       Dashboard
                     </Link>
                   )}
-                  <Link
+                  <a
                     href="/cart"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Ver Carrinho
-                  </Link>
+                  </a>
                   <button
                     onClick={() => signOut()}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
