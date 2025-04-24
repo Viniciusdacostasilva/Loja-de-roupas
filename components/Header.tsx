@@ -1,4 +1,5 @@
 import { Moon, Sun, ChevronDown, X, Menu } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { FormEvent } from "react";
 
@@ -12,11 +13,6 @@ interface HeaderProps {
   searchTerm?: string; 
   setSearchTerm?: (value: string) => void; 
   onSearch?: (event: FormEvent<HTMLFormElement>) => void; 
-  user?: {
-    name: string;
-    isAdmin?: boolean;
-  } | null;
-  onLogout?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -29,9 +25,18 @@ const Header: React.FC<HeaderProps> = ({
   searchTerm,
   setSearchTerm,
   onSearch,
-  user,
-  onLogout,
 }) => {
+  const { data: session } = useSession();
+  const user = session?.user
+  ? {
+      name: session.user.name || "Usuário",
+      isAdmin: session.user.is_admin === 1,
+    }
+  : null;
+
+    const handleLogout = () => {
+      signOut();
+    };
   return (
     <header className="w-full h-16 p-4">
       <div className="flex justify-between items-center h-full max-w-6xl mx-auto">
@@ -84,12 +89,12 @@ const Header: React.FC<HeaderProps> = ({
                   >
                     Ver Carrinho
                   </a>
-                  {onLogout && (
+                  {handleLogout && (
                     <Link
                       href="/"
                       onClick={(e) => {
                         e.preventDefault();
-                        onLogout();
+                        handleLogout();
                       }}
                       className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                     >
@@ -124,53 +129,58 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Dropdown Mobile */}
-      {mobileMenuOpen && (
-        <div
-          className={`md:hidden mt-0 shadow-lg p-4 absolute left-0 right-0 z-20 ${
-            darkMode ? "bg-background-black text-white" : "bg-white text-black"
-          }`}
-        >
-          <nav className="flex flex-col gap-4">
-            {user ? (
-              <>
-                {user.isAdmin && (
+        {mobileMenuOpen && (
+          <div
+            className={`md:hidden mt-0 shadow-lg p-4 absolute left-0 right-0 z-20 ${
+              darkMode ? "bg-background-black text-white" : "bg-white text-black"
+            }`}>
+             <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-100"
+              >
+                {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+                <span>{darkMode ? "Modo Claro" : "Modo Escuro"}</span>
+              </button>
+
+            <nav className="flex flex-col gap-4">
+              {user ? (
+                <>
+                  {user.isAdmin && (
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+                  )}
                   <Link
-                    href="/dashboard"
+                    href="/cart"
                     className="block px-4 py-2 hover:bg-gray-100"
                   >
-                    Dashboard
+                    Ver Carrinho
                   </Link>
-                )}
-                <a
-                  href="/cart"
-                  className="block px-4 py-2 hover:bg-gray-100"
+                  {handleLogout && (
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                    >
+                      Sair
+                    </button>
+                  )}
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block px-4 py-2 rounded hover:bg-gray-600 bg-black text-white text-center"
                 >
-                  Ver Carrinho
-                </a>
-                {onLogout && (
-                  <Link
-                    href="/"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onLogout();
-                    }}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                  >
-                    Sair
-                  </Link>
-                )}
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="block px-4 py-2 rounded hover:bg-gray-600 bg-black text-white text-center"
-              >
-                Login
-              </Link>
-            )}
-          </nav>
-        </div>
-      )}
+                  Login
+                </Link>
+              )}
+
+
+            </nav>
+          </div>
+        )}
     </header>
   );
 };

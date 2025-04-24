@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -32,20 +31,10 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
-  const user = session?.user
-  ? {
-      name: session.user.name || "Usuário",
-      isAdmin: session.user.is_admin === 1,
-    }
-  : null;
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/' });
-  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -102,8 +91,6 @@ export default function HomePage() {
       searchTerm={searchTerm}
       setSearchTerm={setSearchTerm}
       onSearch={handleSearch}
-      user={user}
-      onLogout={handleLogout}
     />
 
       <div className="w-full flex flex-col">
