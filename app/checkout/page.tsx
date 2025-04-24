@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useCart } from "@/components/CartContent";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
 
 interface CheckoutItem {
   cartId: string;
@@ -39,16 +38,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data: session } = useSession();
-  const user = session?.user
-    ? {
-        name: session.user.name || "Usuário",
-        isAdmin: session.user.is_admin === 1,
-      }
-    : null;
-    const handleLogout = () => {
-      signOut();
-    };
 
   const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
 
@@ -171,8 +160,6 @@ export default function CheckoutPage() {
       setMenuOpen={setMenuOpen}
       mobileMenuOpen={mobileMenuOpen}
       setMobileMenuOpen={setMobileMenuOpen}
-      user={user}
-      onLogout={handleLogout}
     />
 
       <main className="max-w-7xl mx-auto py-8 px-4">

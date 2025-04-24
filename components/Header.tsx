@@ -1,4 +1,5 @@
 import { Moon, Sun, ChevronDown, X, Menu } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { FormEvent } from "react";
 
@@ -12,11 +13,6 @@ interface HeaderProps {
   searchTerm?: string; 
   setSearchTerm?: (value: string) => void; 
   onSearch?: (event: FormEvent<HTMLFormElement>) => void; 
-  user?: {
-    name: string;
-    isAdmin?: boolean;
-  } | null;
-  onLogout?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -29,9 +25,18 @@ const Header: React.FC<HeaderProps> = ({
   searchTerm,
   setSearchTerm,
   onSearch,
-  user,
-  onLogout,
 }) => {
+  const { data: session } = useSession();
+  const user = session?.user
+  ? {
+      name: session.user.name || "Usuário",
+      isAdmin: session.user.is_admin === 1,
+    }
+  : null;
+
+    const handleLogout = () => {
+      signOut();
+    };
   return (
     <header className="w-full h-16 p-4">
       <div className="flex justify-between items-center h-full max-w-6xl mx-auto">
@@ -84,9 +89,9 @@ const Header: React.FC<HeaderProps> = ({
                   >
                     Ver Carrinho
                   </Link>
-                  {onLogout && (
+                  {handleLogout && (
                     <button
-                      onClick={onLogout}
+                      onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                     >
                       Sair
@@ -143,9 +148,9 @@ const Header: React.FC<HeaderProps> = ({
                 >
                   Ver Carrinho
                 </Link>
-                {onLogout && (
+                {handleLogout && (
                   <button
-                    onClick={onLogout}
+                    onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     Sair
