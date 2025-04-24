@@ -129,53 +129,58 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Dropdown Mobile */}
-      {mobileMenuOpen && (
-        <div
-          className={`md:hidden mt-0 shadow-lg p-4 absolute left-0 right-0 z-20 ${
-            darkMode ? "bg-background-black text-white" : "bg-white text-black"
-          }`}
-        >
-          <nav className="flex flex-col gap-4">
-            {user ? (
-              <>
-                {user.isAdmin && (
+        {mobileMenuOpen && (
+          <div
+            className={`md:hidden mt-0 shadow-lg p-4 absolute left-0 right-0 z-20 ${
+              darkMode ? "bg-background-black text-white" : "bg-white text-black"
+            }`}>
+             <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-100"
+              >
+                {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+                <span>{darkMode ? "Modo Claro" : "Modo Escuro"}</span>
+              </button>
+
+            <nav className="flex flex-col gap-4">
+              {user ? (
+                <>
+                  {user.isAdmin && (
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+                  )}
                   <Link
-                    href="/dashboard"
+                    href="/cart"
                     className="block px-4 py-2 hover:bg-gray-100"
                   >
-                    Dashboard
+                    Ver Carrinho
                   </Link>
-                )}
-                <a
-                  href="/cart"
-                  className="block px-4 py-2 hover:bg-gray-100"
+                  {handleLogout && (
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                    >
+                      Sair
+                    </button>
+                  )}
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block px-4 py-2 rounded hover:bg-gray-600 bg-black text-white text-center"
                 >
-                  Ver Carrinho
-                </a>
-                {handleLogout && (
-                  <Link
-                    href="/"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleLogout();
-                    }}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                  >
-                    Sair
-                  </Link>
-                )}
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="block px-4 py-2 rounded hover:bg-gray-600 bg-black text-white text-center"
-              >
-                Login
-              </Link>
-            )}
-          </nav>
-        </div>
-      )}
+                  Login
+                </Link>
+              )}
+
+
+            </nav>
+          </div>
+        )}
     </header>
   );
 };

@@ -106,9 +106,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-background-black">
       <div className="relative max-w-2xl w-full bg-white p-6 rounded-xl shadow-lg">
-        <button onClick={() => router.back()} className="absolute top-4 left-4 text-blue-600 hover:text-blue-800">
+        <button onClick={() => router.back()} className="absolute top-4 left-4 text-black hover:text-light-black">
           <FaArrowLeft size={24} />
         </button>
 
@@ -155,7 +155,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               placeholder="Descrição"
               value={product.description}
               onChange={(e) => setProduct({ ...product, description: e.target.value })}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black"
+              className="w-full h-[150px] p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black"
               required
             />
           </div>
@@ -206,7 +206,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
           <button
             type="submit"
-            className="w-full p-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-all font-semibold"
+            className="w-full p-3 text-white bg-black rounded-md hover:bg-light-black transition-all font-semibold"
             disabled={loading}
           >
             {loading ? "Salvando..." : "Salvar Alterações"}

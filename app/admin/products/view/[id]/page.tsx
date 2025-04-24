@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Moon, Sun, ChevronDown } from "lucide-react";
+import { Moon, Sun, ChevronDown } from "lucide-react"; 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useCart } from "@/components/CartContent";
+import WarningAlert from "@/components/WarningAlert";
 
 interface Product {
   id: string;
@@ -50,6 +51,7 @@ export default function ProductPage() {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [showWarning, setShowWarning] = useState(false); 
   const params = useParams();
   const id = params.id; // Obtendo o ID do produto da URL
   console.log("Product ID:", id);
@@ -80,7 +82,7 @@ export default function ProductPage() {
   const handleAddToCart = () => {
     if (!product) return;
     if (!selectedSize) {
-      alert("Por favor, selecione um tamanho antes de adicionar ao carrinho.");
+      setShowWarning(true); 
       return;
     }
 
@@ -99,7 +101,7 @@ export default function ProductPage() {
   const handleBuyNow = () => {
     if (!product) return;
     if (!selectedSize) {
-      alert("Por favor, selecione um tamanho antes de continuar.");
+      setShowWarning(true); 
       return;
     }
 
@@ -261,6 +263,14 @@ export default function ProductPage() {
             </div>
         </div>
       </main>
+
+      {/* WarningAlert */}
+      {showWarning && (
+        <WarningAlert
+          message="Por favor, selecione um tamanho antes de continuar."
+          onClose={() => setShowWarning(false)}
+        />
+      )}
     </div>
   );
 }
