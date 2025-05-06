@@ -42,6 +42,7 @@ export default function CheckoutPage() {
 
   const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
   const [showWarning, setShowWarning] = useState(false); // Estado para WarningAlert
+  const [warningMessage, setWarningMessage] = useState(""); // Estado para a mensagem de aviso
 
   // Usar useEffect para inicializar os itens
   useEffect(() => {
@@ -145,7 +146,8 @@ export default function CheckoutPage() {
     if (formData.paymentMethod === "credit" || formData.paymentMethod === "debit") {
       const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
       if (!regex.test(formData.cardExpiry || "")) {
-        alert("A validade do cartão deve estar no formato MM/AA.");
+        setShowWarning(true);
+        setWarningMessage("A validade do cartão deve estar no formato MM/AA.");
         return;
       }
 
@@ -154,14 +156,30 @@ export default function CheckoutPage() {
       const currentMonth = currentDate.getMonth() + 1; // Os meses em JavaScript são baseados em 0
       const currentYear = currentDate.getFullYear() % 100; // Obtém os dois últimos dígitos do ano
 
-      if (year < currentYear || (year === currentYear && month < currentMonth)) {
-        alert("A validade do cartão não pode ser inferior à data atual.");
+      if (month < 1 || month > 12) {
+        setShowWarning(true);
+        setWarningMessage("Coloque um mês válido.");
+        return;
+      }
+
+      if (year < currentYear) {
+        setShowWarning(true);
+        setWarningMessage("Insira um ano superior ao atual.");
+        return;
+      }
+
+      if (year === currentYear && month < currentMonth) {
+        setShowWarning(true);
+        setWarningMessage("A validade do cartão não pode ser inferior à data atual.");
         return;
       }
     }
 
-    // Exibir o WarningAlert
+    // Exibir o WarningAlert para compra fictícia
     setShowWarning(true);
+    setWarningMessage(
+      "Este site é um projeto fictício, nenhuma compra foi de fato efetuada e nenhum dado foi salvo. Você será redirecionado para a página inicial."
+    );
 
     // Limpar o carrinho
     clearCart();
@@ -544,10 +562,15 @@ export default function CheckoutPage() {
       {/* WarningAlert */}
       {showWarning && (
         <WarningAlert
-          message="Este site é um projeto fictício, nenhuma compra foi de fato efetuada e nenhum dado foi salvo. Você será redirecionado para a página inicial."
+          message={warningMessage}
           onClose={() => {
             setShowWarning(false);
-            router.push("/"); // Redireciona para a página inicial
+            if (
+              warningMessage ===
+              "Este site é um projeto fictício, nenhuma compra foi de fato efetuada e nenhum dado foi salvo. Você será redirecionado para a página inicial."
+            ) {
+              router.push("/"); // Redireciona para a página inicial
+            }
           }}
         />
       )}
