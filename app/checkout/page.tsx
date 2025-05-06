@@ -2,6 +2,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useCart } from "@/components/CartContent";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { X } from "lucide-react";
+import Header from "@/components/Header";
+import WarningAlert from "@/components/WarningAlert"; // Importando o WarningAlert
 
 interface CheckoutItem {
   cartId: string;
@@ -11,9 +15,6 @@ interface CheckoutItem {
   quantity: number;
   imageUrl: string;
 }
-import Image from "next/image";
-import {  X } from "lucide-react";
-import Header from "@/components/Header";
 
 interface CheckoutForm {
   name: string;
@@ -31,8 +32,8 @@ interface CheckoutForm {
 export default function CheckoutPage() {
   const { cart: originalCart, clearCart } = useCart();
   const searchParams = useSearchParams();
-  const selectedItemIds = useMemo(() => 
-    searchParams.get('items')?.split(',') || [], 
+  const selectedItemIds = useMemo(
+    () => searchParams.get("items")?.split(",") || [],
     [searchParams]
   );
   const router = useRouter();
@@ -40,27 +41,28 @@ export default function CheckoutPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
+  const [showWarning, setShowWarning] = useState(false); // Estado para WarningAlert
 
   // Usar useEffect para inicializar os itens
   useEffect(() => {
     const initializeCheckoutItems = () => {
       // Verificar items temporários primeiro
-      const tempItems = sessionStorage.getItem('tempCheckoutItems');
+      const tempItems = sessionStorage.getItem("tempCheckoutItems");
       if (tempItems) {
         try {
           const parsedItems = JSON.parse(tempItems);
           setCheckoutItems(parsedItems);
           // Limpar após usar
-          sessionStorage.removeItem('tempCheckoutItems');
+          sessionStorage.removeItem("tempCheckoutItems");
           return;
         } catch (error) {
-          console.error('Erro ao processar items temporários:', error);
+          console.error("Erro ao processar items temporários:", error);
         }
       }
 
       // Se não houver items temporários, usar items do carrinho
       if (selectedItemIds.length > 0) {
-        const cartItems = originalCart.filter(item => 
+        const cartItems = originalCart.filter((item) =>
           selectedItemIds.includes(item.cartId)
         );
         setCheckoutItems(cartItems);
@@ -71,21 +73,27 @@ export default function CheckoutPage() {
   }, [selectedItemIds, originalCart]);
 
   // Calcular total
-  const [checkoutTotal, setCheckoutTotal] = useState(() => 
-    checkoutItems.reduce((sum: number, item: CheckoutItem) => sum + (item.price * item.quantity), 0)
+  const [checkoutTotal, setCheckoutTotal] = useState(() =>
+    checkoutItems.reduce(
+      (sum: number, item: CheckoutItem) =>
+        sum + item.price * item.quantity,
+      0
+    )
   );
 
   // Atualizar total quando os itens mudam
   useEffect(() => {
     const newTotal: number = checkoutItems.reduce(
-      (sum: number, item: CheckoutItem) => sum + (item.price * item.quantity), 
+      (sum: number, item: CheckoutItem) =>
+        sum + item.price * item.quantity,
       0
     );
     setCheckoutTotal(newTotal);
   }, [checkoutItems]);
 
   const [darkMode, setDarkMode] = useState<boolean>(
-    typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
+    typeof window !== "undefined" &&
+      localStorage.getItem("theme") === "dark"
   );
   const [formData, setFormData] = useState<CheckoutForm>({
     name: "",
@@ -95,24 +103,68 @@ export default function CheckoutPage() {
     state: "",
     zipCode: "",
     paymentMethod: "credit",
+    cardNumber: "", // Valor inicial definido
+    cardExpiry: "", // Valor inicial definido
+    cardCVV: "", // Valor inicial definido
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+
+    // Validações específicas para os campos
+    if (name === "cardNumber" && value.length > 16) return; // Limita o número do cartão a 16 dígitos
+    if (name === "cardCVV" && value.length > 3) return; // Limita o CVV a 3 dígitos
+
+    // Adicionar "/" automaticamente no campo de validade
+    if (name === "cardExpiry") {
+      let formattedValue = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+      if (formattedValue.length > 2) {
+        formattedValue = `${formattedValue.slice(0, 2)}/${formattedValue.slice(2)}`;
+      }
+      if (formattedValue.length > 5) return; // Limita o campo a 5 caracteres (MM/AA)
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: formattedValue,
+      }));
+      return;
+    }
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você implementaria a lógica de processamento do pagamento
-    
-    // Simulando um processamento
-    alert("Pedido realizado com sucesso!");
+
+    // Validação para o campo de validade do cartão
+    if (formData.paymentMethod === "credit" || formData.paymentMethod === "debit") {
+      const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+      if (!regex.test(formData.cardExpiry || "")) {
+        alert("A validade do cartão deve estar no formato MM/AA.");
+        return;
+      }
+
+      const [month, year] = (formData.cardExpiry ?? "").split("/").map(Number);
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1; // Os meses em JavaScript são baseados em 0
+      const currentYear = currentDate.getFullYear() % 100; // Obtém os dois últimos dígitos do ano
+
+      if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        alert("A validade do cartão não pode ser inferior à data atual.");
+        return;
+      }
+    }
+
+    // Exibir o WarningAlert
+    setShowWarning(true);
+
+    // Limpar o carrinho
     clearCart();
-    router.push("/order-confirmation");
   };
 
   useEffect(() => {
@@ -130,57 +182,68 @@ export default function CheckoutPage() {
 
   // Função para atualizar quantidade
   const updateCheckoutQuantity = (cartId: string, change: number) => {
-    setCheckoutItems((prevItems: CheckoutItem[]) => 
+    setCheckoutItems((prevItems: CheckoutItem[]) =>
       prevItems.map((item: CheckoutItem) => {
-      if (item.cartId === cartId) {
-        const newQuantity: number = Math.max(1, item.quantity + change);
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
+        if (item.cartId === cartId) {
+          const newQuantity: number = Math.max(1, item.quantity + change);
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
       })
     );
   };
 
   // Função para remover item
   const removeCheckoutItem = (cartId: string) => {
-    setCheckoutItems((prevItems: CheckoutItem[]) => prevItems.filter((item: CheckoutItem) => item.cartId !== cartId));
+    setCheckoutItems((prevItems: CheckoutItem[]) =>
+      prevItems.filter((item: CheckoutItem) => item.cartId !== cartId)
+    );
   };
 
-
-
   return (
-    <div className={`min-h-screen ${
-      darkMode ? "bg-background-black text-white" : "bg-gray-50 text-black"
-    }`}>
-      
+    <div
+      className={`min-h-screen ${
+        darkMode
+          ? "bg-background-black text-white"
+          : "bg-gray-50 text-black"
+      }`}
+    >
       <Header
-      darkMode={darkMode}
-      setDarkMode={setDarkMode}
-      menuOpen={menuOpen}
-      setMenuOpen={setMenuOpen}
-      mobileMenuOpen={mobileMenuOpen}
-      setMobileMenuOpen={setMobileMenuOpen}
-    />
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
 
       <main className="max-w-7xl mx-auto py-8 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Formulário de Checkout */}
-          <div className={`${
-            darkMode ? "bg-black" : "bg-white"
-          } p-6 rounded-lg shadow-md`}>
-            <h2 className="text-2xl font-bold mb-6">Informações de Entrega</h2>
+          <div
+            className={`${
+              darkMode ? "bg-black" : "bg-white"
+            } p-6 rounded-lg shadow-md`}
+          >
+            <h2 className="text-2xl font-bold mb-6">
+              Informações de Entrega
+            </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className={`block text-sm font-medium ${
-                  darkMode ? "text-gray-200" : "text-gray-700"
-                }`}>Nome completo</label>
+                <label
+                  className={`block text-sm font-medium ${
+                    darkMode ? "text-gray-200" : "text-gray-700"
+                  }`}
+                >
+                  Nome completo
+                </label>
                 <input
                   type="text"
                   name="name"
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
-                    darkMode 
-                      ? "bg-link-gray border-gray-600 text-white" 
+                    darkMode
+                      ? "bg-link-gray border-gray-600 text-white"
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.name}
@@ -189,16 +252,20 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium ${
-                  darkMode ? "text-gray-200" : "text-gray-700"
-                }`}>Email</label>
+                <label
+                  className={`block text-sm font-medium ${
+                    darkMode ? "text-gray-200" : "text-gray-700"
+                  }`}
+                >
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
-                    darkMode 
-                      ? "bg-link-gray border-gray-600 text-white" 
+                    darkMode
+                      ? "bg-link-gray border-gray-600 text-white"
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.email}
@@ -207,16 +274,20 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium ${
-                  darkMode ? "text-gray-200" : "text-gray-700"
-                }`}>Endereço</label>
+                <label
+                  className={`block text-sm font-medium ${
+                    darkMode ? "text-gray-200" : "text-gray-700"
+                  }`}
+                >
+                  Endereço
+                </label>
                 <input
                   type="text"
                   name="address"
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
-                    darkMode 
-                      ? "bg-link-gray border-gray-600 text-white" 
+                    darkMode
+                      ? "bg-link-gray border-gray-600 text-white"
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.address}
@@ -226,16 +297,20 @@ export default function CheckoutPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={`block text-sm font-medium ${
-                    darkMode ? "text-gray-200" : "text-gray-700"
-                  }`}>Cidade</label>
+                  <label
+                    className={`block text-sm font-medium ${
+                      darkMode ? "text-gray-200" : "text-gray-700"
+                    }`}
+                  >
+                    Cidade
+                  </label>
                   <input
                     type="text"
                     name="city"
                     required
                     className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
-                      darkMode 
-                        ? "bg-link-gray border-gray-600 text-white" 
+                      darkMode
+                        ? "bg-link-gray border-gray-600 text-white"
                         : "bg-white border-gray-300 text-gray-900"
                     }`}
                     value={formData.city}
@@ -243,16 +318,20 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className={`block text-sm font-medium ${
-                    darkMode ? "text-gray-200" : "text-gray-700"
-                  }`}>Estado</label>
+                  <label
+                    className={`block text-sm font-medium ${
+                      darkMode ? "text-gray-200" : "text-gray-700"
+                    }`}
+                  >
+                    Estado
+                  </label>
                   <input
                     type="text"
                     name="state"
                     required
                     className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
-                      darkMode 
-                        ? "bg-link-gray border-gray-600 text-white" 
+                      darkMode
+                        ? "bg-link-gray border-gray-600 text-white"
                         : "bg-white border-gray-300 text-gray-900"
                     }`}
                     value={formData.state}
@@ -262,16 +341,20 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium ${
-                  darkMode ? "text-gray-200" : "text-gray-700"
-                }`}>CEP</label>
+                <label
+                  className={`block text-sm font-medium ${
+                    darkMode ? "text-gray-200" : "text-gray-700"
+                  }`}
+                >
+                  CEP
+                </label>
                 <input
                   type="text"
                   name="zipCode"
                   required
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
-                    darkMode 
-                      ? "bg-link-gray border-gray-600 text-white" 
+                    darkMode
+                      ? "bg-link-gray border-gray-600 text-white"
                       : "bg-white border-gray-300 text-gray-900"
                   }`}
                   value={formData.zipCode}
@@ -280,14 +363,18 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium ${
-                  darkMode ? "text-gray-200" : "text-gray-700"
-                }`}>Método de Pagamento</label>
+                <label
+                  className={`block text-sm font-medium ${
+                    darkMode ? "text-gray-200" : "text-gray-700"
+                  }`}
+                >
+                  Método de Pagamento
+                </label>
                 <select
                   name="paymentMethod"
                   className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm ${
-                    darkMode 
-                      ? "bg-link-gray border-gray-600 text-white" 
+                    darkMode
+                      ? "bg-link-gray border-gray-600 text-white"
                       : " border-gray-300 text-gray-900"
                   }`}
                   value={formData.paymentMethod}
@@ -370,9 +457,11 @@ export default function CheckoutPage() {
           </div>
 
           {/* Resumo do Pedido */}
-          <div className={`${
-            darkMode ? "bg-black" : "bg-white"
-          } p-6 rounded-lg shadow-md h-fit`}>
+          <div
+            className={`${
+              darkMode ? "bg-black" : "bg-white"
+            } p-6 rounded-lg shadow-md h-fit`}
+          >
             <h2 className="text-2xl font-bold mb-6">Resumo do Pedido</h2>
             <div className="space-y-4">
                 {checkoutItems.map((item: CheckoutItem) => (
@@ -451,6 +540,17 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
+
+      {/* WarningAlert */}
+      {showWarning && (
+        <WarningAlert
+          message="Este site é um projeto fictício, nenhuma compra foi de fato efetuada e nenhum dado foi salvo. Você será redirecionado para a página inicial."
+          onClose={() => {
+            setShowWarning(false);
+            router.push("/"); // Redireciona para a página inicial
+          }}
+        />
+      )}
     </div>
   );
 }
