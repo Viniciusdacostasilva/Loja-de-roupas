@@ -9,8 +9,9 @@ import 'swiper/css/autoplay';
 import { Autoplay } from 'swiper/modules';
 import { useRouter } from 'next/navigation';
 import  Header  from "../components/Header"
-import CategoriesSidebar from "@/components/CategoriesSidebar";
+import Categories from "@/components/Categories";
 import ProductsGrid from "@/components/ProductsGrid";
+import Banner from "@/components/Banner";
 
 interface Product {
   id: string;
@@ -21,7 +22,7 @@ interface Product {
   category: string;
 }
 
-const categories = ["Todos", "Casacos", "Vestidos", "Blusas", "Shorts", "Calças", "Acessórios"];
+
 
 export default function HomePage() {
   const [darkMode, setDarkMode] = useState(
@@ -93,100 +94,20 @@ export default function HomePage() {
       onSearch={handleSearch}
     />
 
-      <div className="w-full flex flex-col">
-        {/* Layout para md+ */}
-        <div className="md:grid md:grid-cols-2 hidden">
-          {/* Banner 1 */}
-          <div className="h-[28rem] w-full relative col-span-2">
-            <Image 
-              src="/image/banner1.png" 
-              alt="banner" 
-              fill 
-              priority 
-              className="object-cover object-top"
-            />
-          </div>
-          {/* Banner 2 */}
-          <div className="h-[300px] w-full relative">
-            <Image 
-              src="/image/banner2.png" 
-              alt="banner2" 
-              fill 
-              className="object-cover"
-              priority
-            />
-          </div>
-          {/* Banner 3 */}
-          <div className="h-[300px] w-full relative">
-            <Image 
-              src="/image/banner3.png" 
-              alt="banner3" 
-              fill 
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
+      {/* Banner Carrossel */}
+      <Banner />
 
-        {/* Carrossel para sm */}
-        <div className="md:hidden w-full">
-          <Swiper
-            spaceBetween={10}
-            autoplay={{ delay: 8000, disableOnInteraction: false }}
-            modules={[Autoplay]}
-            className="w-full h-[250px]"
-          >
-            <SwiperSlide>
-              <div className="h-[250px] w-full relative">
-                <Image 
-                  src="/image/banner1.png" 
-                  alt="banner1" 
-                  fill 
-                  className="object-cover object-top"
-                  priority
-                />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="h-[250px] w-full relative">
-                <Image 
-                  src="/image/banner2.png" 
-                  alt="banner2" 
-                  fill 
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="h-[250px] w-full relative">
-                <Image 
-                  src="/image/banner3.png" 
-                  alt="banner3" 
-                  fill 
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </SwiperSlide>
-          </Swiper>
-        </div>
-      </div>
-
+      <Categories
+        categories={["Todos", "Casacos", "Vestidos", "Blusas", "Shorts", "Calças", "Acessórios"]}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        darkMode={darkMode}
+      />
 
       <div className="flex md:flex-row sm:flex-col">
-      <div className="flex sm:flex-row md:flex-row overflow-x-auto">
-        {/* Sidebar de Categorias */}
-        <CategoriesSidebar
-          categories={categories}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          darkMode={darkMode}
-        />
-      </div>
 
         <main className={`p-6 flex-1`}>
-          <h2 className="sm:text-xl md:text-3xl font-bold text-center mb-6">
+          <h2 className="text-3xl font-bold text-left mb-6">
             Nossos Produtos
           </h2>
           {loading && <div className="text-center">Carregando...</div>}
