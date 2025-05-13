@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
-import { Autoplay } from 'swiper/modules';
 import { useRouter } from 'next/navigation';
 import  Header  from "../components/Header"
 import Categories from "@/components/Categories";
