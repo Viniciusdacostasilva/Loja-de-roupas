@@ -239,9 +239,11 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Formulário de Checkout */}
           <div
-            className={`${
-              darkMode ? "bg-black" : "bg-white"
-            } p-6 rounded-lg shadow-md`}
+            className={`p-6 rounded-lg shadow-md border ${
+              darkMode
+                ? "border-white bg-transparent"
+                : "bg-white border-gray-200"
+            }`}
           >
             <h2 className="text-2xl font-bold mb-6">
               Informações de Entrega
@@ -465,7 +467,7 @@ export default function CheckoutPage() {
                 type="submit"
                 className={`w-full py-3 px-4 rounded-md transition-colors ${
                   darkMode
-                    ? "bg-white text-black hover:bg-background-black hover:text-white"
+                    ? "bg-white text-black hover:bg-black hover:text-white"
                     : "bg-black text-white hover:bg-white-buttons hover:text-black hover:shadow-sm"
                 }`}
               >
@@ -476,69 +478,71 @@ export default function CheckoutPage() {
 
           {/* Resumo do Pedido */}
           <div
-            className={`${
-              darkMode ? "bg-black" : "bg-white"
-            } p-6 rounded-lg shadow-md h-fit`}
+            className={`p-6 rounded-lg shadow-md border ${
+              darkMode
+                ? "border-white bg-transparent"
+                : "bg-white border-gray-200"
+            } h-fit`}
           >
             <h2 className="text-2xl font-bold mb-6">Resumo do Pedido</h2>
             <div className="space-y-4">
-                {checkoutItems.map((item: CheckoutItem) => (
+              {checkoutItems.map((item: CheckoutItem) => (
                 <div key={item.cartId} className="flex gap-4 py-2 border-b relative">
                   <Image
-                  src={item.imageUrl}
-                  alt={item.name}
-                  width={100}
-                  height={100}
-                  className="rounded-md"
+                    src={item.imageUrl}
+                    alt={item.name}
+                    width={100}
+                    height={100}
+                    className="rounded-md"
                   />
                   <div className="flex-1">
-                  <h3 className="font-medium">{item.name}</h3>
-                  <p className={`text-sm ${
-                    darkMode ? "text-gray-300" : "text-gray-500"
-                  }`}>
-                    Tamanho: {item.size}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <button
-                    onClick={() => updateCheckoutQuantity(item.cartId, -1)}
-                    className={`px-2 py-1 rounded ${
-                      darkMode 
-                      ? "bg-black hover:bg-white hover:text-light-black" 
-                      : "bg-gray-100 hover:bg-gray-200"
-                    }`}
-                    disabled={item.quantity <= 1}
-                    >
-                    -
-                    </button>
-                    <span className="min-w-[20px] text-center">{item.quantity}</span>
-                    <button
-                    onClick={() => updateCheckoutQuantity(item.cartId, 1)}
-                    className={`px-2 py-1 rounded ${
-                      darkMode 
-                      ? "bg-black hover:bg-white hover:text-light-black" 
-                      : "bg-gray-100 hover:bg-gray-200"
-                    }`}
-                    >
-                    +
-                    </button>
-                  </div>
-                  <p className="text-sm font-medium mt-1">
-                    R$ {Number(item.price * item.quantity).toFixed(2)}
-                  </p>
+                    <h3 className="font-medium">{item.name}</h3>
+                    <p className={`text-sm ${
+                      darkMode ? "text-gray-300" : "text-gray-500"
+                    }`}>
+                      Tamanho: {item.size}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => updateCheckoutQuantity(item.cartId, -1)}
+                        className={`px-2 py-1 rounded ${
+                          darkMode
+                            ? "bg-black hover:bg-white hover:text-light-black"
+                            : "bg-gray-100 hover:bg-gray-200"
+                        }`}
+                        disabled={item.quantity <= 1}
+                      >
+                        -
+                      </button>
+                      <span className="min-w-[20px] text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateCheckoutQuantity(item.cartId, 1)}
+                        className={`px-2 py-1 rounded ${
+                          darkMode
+                            ? "bg-black hover:bg-white hover:text-light-black"
+                            : "bg-gray-100 hover:bg-gray-200"
+                        }`}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <p className="text-sm font-medium mt-1">
+                      R$ {Number(item.price * item.quantity).toFixed(2)}
+                    </p>
                   </div>
                   <button
-                  onClick={() => removeCheckoutItem(item.cartId)}
-                  className={`absolute top-2 right-2 p-1 rounded-full hover:bg-opacity-10 ${
-                    darkMode 
-                    ? "hover:bg-white text-gray-300 hover:text-white" 
-                    : "hover:bg-black text-gray-500 hover:text-black"
-                  }`}
-                  aria-label="Remover item"
+                    onClick={() => removeCheckoutItem(item.cartId)}
+                    className={`absolute top-2 right-2 p-1 rounded-full hover:bg-opacity-10 ${
+                      darkMode
+                        ? "hover:bg-white text-gray-300 hover:text-white"
+                        : "hover:bg-black text-gray-500 hover:text-black"
+                    }`}
+                    aria-label="Remover item"
                   >
-                  <X size={18} />
+                    <X size={18} />
                   </button>
                 </div>
-                ))}
+              ))}
 
               <div className="pt-4">
                 <div className="flex justify-between py-2">

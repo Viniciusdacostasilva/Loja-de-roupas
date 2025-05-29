@@ -14,13 +14,11 @@ const Categories: React.FC<CategoriesProps> = ({
   return (
     <section className="p-6">
       <h2 className="text-3xl font-bold mb-4 text-left">Categorias</h2>
-      <div
-        className="flex gap-4 overflow-x-auto lg:grid lg:grid-cols-4 lg:gap-4 scrollbar-hide"
-      >
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide">
         {categories.map((category) => (
           <button
             key={category}
-            className={`flex-shrink-0 sm:w-[220px] md:w-[320px] lg:w-auto h-[120px] overflow-hidden rounded-md border transition-all ${
+            className={`flex-shrink-0 w-[110px] h-[48px] overflow-hidden rounded-md border transition-all ${
               selectedCategory === category
                 ? "bg-white-buttons text-black border-black"
                 : darkMode
@@ -30,7 +28,7 @@ const Categories: React.FC<CategoriesProps> = ({
             onClick={() => setSelectedCategory(category)}
           >
             <div className="flex items-center justify-center h-full bg-black/20 group-hover:bg-black/30 transition-all">
-              <span className="text-sm font-medium">{category}</span>
+              <span className="text-xs font-medium">{category}</span>
             </div>
           </button>
         ))}
